@@ -73,8 +73,8 @@ jobs:
           
           For Homebrew installation:
           ```
-          brew tap ovat-team/ovat
-          brew install ovat
+          brew tap tavo-team/tavo
+          brew install tavo
           ```
           
           SHA256: ${{ env.SHA }} 

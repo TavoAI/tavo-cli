@@ -1,6 +1,6 @@
 # Publishing to Homebrew
 
-This document explains how to publish the OVAT CLI tool to Homebrew.
+This document explains how to publish the TAVO CLI tool to Homebrew.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ This document explains how to publish the OVAT CLI tool to Homebrew.
 
 3. Generate a tarball from the release:
    ```bash
-   wget https://github.com/ovat-team/ovat-cli/archive/refs/tags/v0.1.0.tar.gz
+   wget https://github.com/tavo-team/tavo-cli/archive/refs/tags/v0.1.0.tar.gz
    ```
 
 4. Calculate the SHA256 hash of the tarball:
@@ -30,21 +30,21 @@ This document explains how to publish the OVAT CLI tool to Homebrew.
    shasum -a 256 v0.1.0.tar.gz
    ```
 
-5. Update the SHA256 hash in the Homebrew formula (`ovat.rb`):
+5. Update the SHA256 hash in the Homebrew formula (`tavo.rb`):
    ```ruby
    sha256 "the-sha256-hash-you-generated"
    ```
 
 ### 2. Create a Homebrew Tap Repository
 
-1. Create a GitHub repository named `homebrew-ovat` (must follow the naming convention `homebrew-<name>`)
+1. Create a GitHub repository named `homebrew-tavo` (must follow the naming convention `homebrew-<n>`)
 
-2. Add your `ovat.rb` formula to this repository:
+2. Add your `tavo.rb` formula to this repository:
    ```bash
-   cp ovat.rb /path/to/homebrew-ovat/Formula/
-   cd /path/to/homebrew-ovat
-   git add Formula/ovat.rb
-   git commit -m "Add ovat formula"
+   cp tavo.rb /path/to/homebrew-tavo/Formula/
+   cd /path/to/homebrew-tavo
+   git add Formula/tavo.rb
+   git commit -m "Add tavo formula"
    git push
    ```
 
@@ -52,17 +52,17 @@ This document explains how to publish the OVAT CLI tool to Homebrew.
 
 1. Add the tap:
    ```bash
-   brew tap ovat-team/ovat
+   brew tap tavo-team/tavo
    ```
 
 2. Install the formula:
    ```bash
-   brew install ovat
+   brew install tavo
    ```
 
 3. Verify the installation:
    ```bash
-   ovat --help
+   tavo --help
    ```
 
 ### 4. Promote the Tap
@@ -72,8 +72,8 @@ This document explains how to publish the OVAT CLI tool to Homebrew.
    ## Installation
 
    ```bash
-   brew tap ovat-team/ovat
-   brew install ovat
+   brew tap tavo-team/tavo
+   brew install tavo
    ```
    ```
 

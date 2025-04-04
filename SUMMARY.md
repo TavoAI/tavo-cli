@@ -1,6 +1,6 @@
-# OVAT CLI Tool - Development Summary
+# TAVO CLI Tool - Development Summary
 
-This document provides a comprehensive summary of the OVAT CLI tool implementation.
+This document provides a comprehensive summary of the TAVO CLI tool implementation.
 
 ## Directory Structure
 
@@ -27,14 +27,14 @@ This document provides a comprehensive summary of the OVAT CLI tool implementati
 ├── LICENSE
 ├── pytest.ini
 ├── test_install.sh
-└── ovat.rb
+└── tavo.rb
 ```
 
 ## CLI Commands
 
 The CLI tool provides the following commands:
 
-1. `ovat server start-dev` - Start the OPA policy server in development mode
+1. `tavo server start-dev` - Start the OPA policy server in development mode
    - `--pre-built` - Use prebuilt policies on startup
    - `--db-filename TEXT` - Path to the local database file
    - `--use-mongodb` - Use MongoDB as the policy data store
@@ -56,7 +56,7 @@ The CLI tool provides the following commands:
    - `test_install.sh` - Script to test local installation
 
 4. **Distribution**:
-   - `ovat.rb` - Homebrew formula for macOS distribution
+   - `tavo.rb` - Homebrew formula for macOS distribution
    - `.github/workflows/ci.yml` - GitHub Actions configuration for CI/CD
 
 ## Development
@@ -101,4 +101,4 @@ The CLI tool provides the following commands:
 
 ## Conclusion
 
-The OVAT CLI tool has been successfully implemented with all the requested features. It provides a user-friendly interface to the OPA policy server and is ready for distribution via PyPI and Homebrew. 
+The TAVO CLI tool has been successfully implemented with all the requested features. It provides a user-friendly interface to the OPA policy server and is ready for distribution via PyPI and Homebrew. 

@@ -1,20 +1,20 @@
-# OVAT CLI
+# TAVO CLI
 
-OVAT (Open Policy Agent Verification and Testing) CLI tool provides an easy-to-use command-line interface for managing OPA policies.
+TAVO (Open Policy Agent Verification and Testing) CLI tool provides an easy-to-use command-line interface for managing OPA policies.
 
 ## Installation
 
 ### Using pip
 
 ```bash
-pip install ovat-cli
+pip install tavo-cli
 ```
 
 ### Using Homebrew (macOS)
 
 ```bash
-brew tap ovat-team/ovat
-brew install ovat
+brew tap TavoAI/tavo
+brew install tavo
 ```
 
 ## Usage
@@ -23,16 +23,16 @@ brew install ovat
 
 ```bash
 # Start the server with default settings
-ovat server start-dev
+tavo server start-dev
 
 # Use prebuilt policies
-ovat server start-dev --pre-built
+tavo server start-dev --pre-built
 
 # Specify a custom database file
-ovat server start-dev --db-filename my_db.json
+tavo server start-dev --db-filename my_db.json
 
 # Use prebuilt policies and specify custom database
-ovat server start-dev --pre-built --db-filename my_db.json
+tavo server start-dev --pre-built --db-filename my_db.json
 ```
 
 ## Development

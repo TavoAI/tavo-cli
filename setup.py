@@ -6,10 +6,10 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup(
-    name="ovat-cli",
+    name="tavo-cli",
     version="0.1.0",
     packages=["src"],
-    package_dir={"ovat_cli": "src"},
+    package_dir={"tavo_cli": "src"},
     py_modules=["src"],
     include_package_data=True,
     package_data={
@@ -19,13 +19,13 @@ setup(
     python_requires=">=3.6",
     entry_points={
         "console_scripts": [
-            "ovat=src.cli:ovat",
+            "tavo=src.cli:tavo",
         ],
     },
-    description="OVAT - Open Policy Agent Verification and Testing CLI tool",
-    author="OVAT Team",
-    author_email="info@ovat.com",
-    url="https://github.com/ovat-team/ovat-cli",
+    description="TAVO - Open Policy Agent Verification and Testing CLI tool",
+    author="TAVO Team",
+    author_email="info@tavo.com",
+    url="https://github.com/TavoAI/tavo-cli",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

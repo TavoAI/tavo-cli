@@ -17,9 +17,9 @@ pip install -e .
 
 # Test the CLI
 echo "Testing the CLI..."
-ovat --help
-ovat server --help
-ovat server start-dev --help
+tavo --help
+tavo server --help
+tavo server start-dev --help
 
 # Deactivate the virtual environment
 echo "Deactivating the virtual environment..."

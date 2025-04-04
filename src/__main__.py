@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .cli import ovat
+from .cli import tavo
 
 if __name__ == "__main__":
-    ovat() 
+    tavo() 

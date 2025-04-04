@@ -26,11 +26,11 @@ def get_server_script_path():
     return "server.py"
 
 @click.group()
-def ovat():
-    """OVAT - Open Policy Agent Verification and Testing CLI tool."""
+def tavo():
+    """TAVO - Open Policy Agent Verification and Testing CLI tool."""
     pass
 
-@ovat.group()
+@tavo.group()
 def server():
     """Commands related to the OPA policy server."""
     pass
@@ -70,4 +70,4 @@ def start_dev(pre_built, db_filename, use_mongodb, prebuilt_policies_file):
         sys.exit(1)
 
 if __name__ == "__main__":
-    ovat() 
+    tavo() 
