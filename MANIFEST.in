@@ -1,0 +1,6 @@
+include README.md
+include requirements.txt
+include LICENSE
+include src/server.py
+include src/policy_store.py
+include src/prebuilt_policies.json 
