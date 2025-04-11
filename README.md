@@ -8,7 +8,7 @@ Before installing TAVO CLI, you need to have Open Policy Agent (OPA) installed o
 
 ### Installing OPA
 
-#### macOS
+#### macOS (ARM 64-bit)
 ```bash
 brew install opa
 ```
@@ -40,7 +40,7 @@ Upcoming
 ### Using Homebrew (macOS)
 
 ```bash
-brew tap TavoAI/tavo
+brew tap TavoAI/tavocli
 brew install tavo
 ```
 
