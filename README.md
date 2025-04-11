@@ -6,9 +6,7 @@ TAVO (Open Policy Agent Verification and Testing) CLI tool provides an easy-to-u
 
 ### Using pip
 
-```bash
-pip install tavo-cli
-```
+Upcoming
 
 ### Using Homebrew (macOS)
 
