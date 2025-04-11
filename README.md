@@ -2,6 +2,35 @@
 
 TAVO (Open Policy Agent Verification and Testing) CLI tool provides an easy-to-use command-line interface for managing OPA policies.
 
+## Prerequisites
+
+Before installing TAVO CLI, you need to have Open Policy Agent (OPA) installed on your system.
+
+### Installing OPA
+
+#### macOS
+```bash
+brew install opa
+```
+
+Or
+
+```bash
+curl -L -o opa https://openpolicyagent.org/downloads/v1.3.0/opa_darwin_arm64_static
+chmod 755 ./opa
+```
+
+#### Linux
+```bash
+curl -L -o opa https://openpolicyagent.org/downloads/v1.3.0/opa_linux_amd64_static
+chmod 755 ./opa
+```
+
+Verify the installation:
+```bash
+opa version
+```
+
 ## Installation
 
 ### Using pip
