@@ -62,6 +62,88 @@ tavo server start-dev --db-filename my_db.json
 tavo server start-dev --pre-built --db-filename my_db.json
 ```
 
+### API Reference
+
+The TAVO server provides the following REST APIs:
+
+#### Policy Management
+
+- **GET /policies/{policy_name}**
+  - Retrieves a policy by name
+  - Response: Policy details in JSON format
+
+- **GET /policies**
+  - Retrieves all policies
+  - Query Parameters:
+    - `domain`: Filter policies by domain
+    - `applicability`: Filter by applicability (`input`, `output`, or `both`)
+  - Response: List of policies in JSON format
+
+- **POST /policies**
+  - Creates or updates a policy
+  - Request Body:
+    ```json
+    {
+      "policy_name": "my_policy",
+      "policy_description": "A brief description of the policy",
+      "policy_applicability": "input",
+      "policy_content": "package myapp\n ... rego code ...",
+      "active": true
+    }
+    ```
+  - Response: Created/updated policy details
+
+- **DELETE /policies/{policy_name}**
+  - Deletes a policy by name
+  - Response: 204 No Content on success
+
+- **DELETE /policies**
+  - Deletes a policy using the name in request body
+  - Request Body:
+    ```json
+    {
+      "policy_name": "my_policy"
+    }
+    ```
+  - Response: 204 No Content on success
+
+#### Policy Activation
+
+- **PUT /policies/{policy_name}/status**
+  - Activates or deactivates a policy
+  - Request Body:
+    ```json
+    {
+      "active": true
+    }
+    ```
+  - Response: Updated policy details
+
+#### Policy Evaluation
+
+- **POST /policies/{policy_name}/evaluate**
+  - Evaluates input data against a specific policy
+  - Request Body:
+    ```json
+    {
+      "input": {
+        "content_type": "input",
+        "content": "example content to evaluate",
+        "config": {
+          "parameter1": true,
+          "parameter2": false
+        }
+      }
+    }
+    ```
+  - Response:
+    ```json
+    {
+      "allow": true/false,
+      "rejection_reasons": []
+    }
+    ```
+
 ## Development
 
 The CLI package is located in the `src` directory. To set up the development environment:
