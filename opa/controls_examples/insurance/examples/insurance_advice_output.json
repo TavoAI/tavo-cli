@@ -1,0 +1,27 @@
+{
+  "content_type": "output",
+  "content": "I understand your car was damaged in a hailstorm and you'd like information about filing a claim with your comprehensive insurance. Here's a general overview of the process and documentation typically needed:\n\nSteps for filing an auto insurance claim for hail damage:\n\n1. Contact your insurance company promptly through their claims hotline, online portal, or mobile app. Hail damage claims should be reported as soon as possible.\n\n2. Gather the following documentation:\n   - Your insurance policy number and coverage details\n   - Photos of the damage (take clear pictures of the cracked windshield, dents on hood and roof)\n   - Date and approximate time of the hailstorm\n   - Location where the damage occurred\n   - Brief description of the damage\n   - Any relevant weather reports or alerts (though the insurance company can typically verify weather events)\n\n3. The insurance company will assign a claims adjuster who will evaluate the damage, either remotely through photos or with an in-person inspection.\n\n4. After assessment, if the claim is approved, you'll receive information about repair options and coverage amounts, which may include:\n   - Authorized repair facilities\n   - Deductible amount you're responsible for\n   - Repair vs. replacement decisions for the windshield\n\nKeep in mind that the claim assessment process varies by insurer, and your policy's specific terms, conditions, and exclusions will determine the actual coverage. Your comprehensive policy typically covers hail damage, but there may be limitations or exclusions depending on your policy's specific language.\n\nYour deductible will apply to this claim, and depending on your policy and state, a claim may potentially affect your premiums upon renewal. Review your policy documents for details about your deductible and coverage limits.\n\nThis information is provided as general guidance only and not as legal or insurance advice. The actual claims process and documentation requirements may vary based on your specific insurance provider, policy terms, and state regulations. For the most accurate information regarding your particular situation, please contact your insurance company directly.\n\nState insurance regulations can vary, so specific requirements and consumer protections may differ depending on your location within the US.",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:05Z",
+    "user": {
+      "id": "user789",
+      "type": "authenticated",
+      "access_level": "standard"
+    },
+    "industry": "insurance",
+    "use_case": "claim_assistance"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true
+  },
+  "request_id": "ins-adv-123456"
+} 

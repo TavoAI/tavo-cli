@@ -1,0 +1,27 @@
+{
+  "content_type": "input",
+  "content": "My car was damaged in a hailstorm last week. The windshield is cracked and there are dents on the hood and roof. I have comprehensive car insurance. What should I do to file a claim, and what documentation will I need?",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:00Z",
+    "user": {
+      "id": "user789",
+      "type": "authenticated",
+      "access_level": "standard"
+    },
+    "industry": "insurance",
+    "use_case": "claim_assistance"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true
+  },
+  "request_id": "ins-adv-123456"
+} 

@@ -1,0 +1,27 @@
+{
+  "content_type": "input",
+  "content": "User's input query to the AI system",
+  "metadata": {
+    "model": {
+      "name": "Model name (e.g., GPT-4o)",
+      "version": "Model version",
+      "provider": "Model provider"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-15T12:00:00Z",
+    "user": {
+      "id": "user123",
+      "type": "authenticated",
+      "access_level": "standard"
+    },
+    "industry": "financial",
+    "use_case": "customer_support"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true
+  },
+  "request_id": "req-12345-abcde"
+} 

@@ -1,0 +1,26 @@
+{
+  "content_type": "output",
+  "content": "I've generated a de-identified summary of diabetic patients over 65 years old. In our database, we have 42 patients matching these criteria. The average HbA1c value is 7.2%, with a range from 5.8% to 11.3%. 28 patients (67%) have HbA1c values over the recommended threshold of 7.0%. Note that this information is presented in aggregate form without any personally identifiable information. For patient-specific information, please use the secure clinical portal which requires appropriate authentication and authorization.",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:05Z",
+    "user": {
+      "id": "dr_smith",
+      "type": "healthcare_provider",
+      "access_level": "physician"
+    },
+    "industry": "healthcare",
+    "use_case": "clinical_data_analysis"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "phi_detection_enabled": true,
+    "hipaa_compliance_check": true
+  },
+  "request_id": "phi-protect-345678"
+} 

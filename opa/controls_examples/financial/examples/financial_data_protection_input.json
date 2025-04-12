@@ -1,0 +1,34 @@
+{
+  "content_type": "input",
+  "content": "I need to check if my credit card ending in 4328 has any recent transactions. My account number ends with 6712. My checking account balance was over $5,000 last month. Can you help me analyze my spending patterns?",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:00Z",
+    "user": {
+      "id": "user789",
+      "type": "authenticated",
+      "access_level": "account_owner"
+    },
+    "industry": "financial",
+    "use_case": "transaction_history"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": true,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true,
+    "credit_card_data_allowed": true,
+    "bank_account_data_allowed": true,
+    "personal_finance_data_allowed": true,
+    "financial_pii_consent_obtained": true,
+    "gdpr_explicit_consent": true,
+    "max_input_length": 1000,
+    "min_input_length": 10
+  },
+  "request_id": "fin-data-protect-123456"
+} 
