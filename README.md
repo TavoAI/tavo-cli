@@ -162,6 +162,11 @@ pip install -e .
 - `tests/`: Test directory
 - `.github/workflows/`: CI/CD configuration
 
+## TODO
+
+1. Explain different usage of MongoDbPolicyDataStore and LocalPolicyDataStore for state management for each policy
+2. Add an architecture diagram to illustrate the purpose of this server
+
 ## License
 
 MIT 
