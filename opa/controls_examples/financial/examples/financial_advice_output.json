@@ -1,0 +1,27 @@
+{
+  "content_type": "output",
+  "content": "Based on your financial situation, I recommend investing 60% of your portfolio in index funds, 30% in bonds, and 10% in individual stocks. For someone with your risk tolerance and time horizon, this offers good diversification while providing potential for growth. Remember that investments can fluctuate in value and past performance is not indicative of future results. This is general information only and not personalized investment advice. You should consult with a licensed financial advisor before making investment decisions.",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:05Z",
+    "user": {
+      "id": "user123",
+      "type": "authenticated",
+      "access_level": "standard"
+    },
+    "industry": "financial",
+    "use_case": "investment_advice"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true
+  },
+  "request_id": "fin-adv-123456"
+} 

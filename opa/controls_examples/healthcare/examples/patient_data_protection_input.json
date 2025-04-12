@@ -1,0 +1,26 @@
+{
+  "content_type": "input",
+  "content": "Can you show me all the diabetic patients in our database who are over 65 years old and their HbA1c results?",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:00Z",
+    "user": {
+      "id": "dr_smith",
+      "type": "healthcare_provider",
+      "access_level": "physician"
+    },
+    "industry": "healthcare",
+    "use_case": "clinical_data_analysis"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "phi_detection_enabled": true,
+    "hipaa_compliance_check": true
+  },
+  "request_id": "phi-protect-345678"
+} 

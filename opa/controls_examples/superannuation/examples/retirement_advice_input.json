@@ -1,0 +1,27 @@
+{
+  "content_type": "input",
+  "content": "I'm 55 years old and would like to retire at 65. I have $400,000 in my superannuation. What investment strategy should I use to maximize my retirement savings in the next 10 years?",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "Australia",
+    "timestamp": "2023-07-01T10:00:00Z",
+    "user": {
+      "id": "user456",
+      "type": "authenticated",
+      "access_level": "standard"
+    },
+    "industry": "superannuation",
+    "use_case": "retirement_planning"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true
+  },
+  "request_id": "ret-adv-567890"
+} 

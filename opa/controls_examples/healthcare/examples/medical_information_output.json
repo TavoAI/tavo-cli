@@ -1,0 +1,27 @@
+{
+  "content_type": "output",
+  "content": "Migraine headaches are often characterized by intense, throbbing pain, usually on one side of the head. Studies suggest that they may be triggered by certain foods, stress, hormonal changes, or environmental factors. Common treatments include pain relievers, triptans, and preventative medications. Some patients experience relief with lifestyle changes such as regular exercise and stress management. This information is for educational purposes only and not meant as medical advice. Always consult with your doctor or healthcare provider before starting any new treatment regimen or if your symptoms are severe or persistent.",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:05Z",
+    "user": {
+      "id": "user123",
+      "type": "authenticated",
+      "access_level": "standard"
+    },
+    "industry": "healthcare",
+    "use_case": "health_information"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": false
+  },
+  "request_id": "med-info-789012"
+} 

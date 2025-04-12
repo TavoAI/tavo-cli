@@ -1,0 +1,27 @@
+{
+  "content_type": "input",
+  "content": "I have $50,000 to invest. What should I do with it to maximize my returns over the next 5 years?",
+  "metadata": {
+    "model": {
+      "name": "GPT-4o",
+      "version": "1.0",
+      "provider": "OpenAI"
+    },
+    "jurisdiction": "US",
+    "timestamp": "2023-07-01T10:00:00Z",
+    "user": {
+      "id": "user123",
+      "type": "authenticated",
+      "access_level": "standard"
+    },
+    "industry": "financial",
+    "use_case": "investment_advice"
+  },
+  "config": {
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true
+  },
+  "request_id": "fin-adv-123456"
+} 

@@ -1,0 +1,54 @@
+{
+  /* Type indicator - identifies this as an output document */
+  "content_type": "output",
+
+  /* Content - The AI-generated response */
+  "content": "AI-generated response that will be evaluated against guardrails",
+
+  /* Metadata - Information about the conversation and context */
+  "metadata": {
+    /* Model information */
+    "model": {
+      "name": "Model name (e.g., GPT-4o)",
+      "version": "Model version",
+      "provider": "Model provider"
+    },
+    
+    /* Jurisdiction - Used for region-specific compliance checks */
+    "jurisdiction": "US",  // Options: "US", "EU", "Australia", etc.
+    
+    /* When this response was generated */
+    "timestamp": "2023-07-15T12:00:05Z",
+    
+    /* User information */
+    "user": {
+      "id": "user123",
+      "type": "authenticated", // authenticated, guest, anonymous
+      "access_level": "standard" // standard, admin, healthcare_provider, etc.
+    },
+    
+    /* Industry and use case - Helps determine which guardrails to apply */
+    "industry": "financial", // financial, healthcare, insurance, superannuation
+    "use_case": "customer_support" // customer_support, advice, information, etc.
+  },
+
+  /* Configuration Settings - Controls which checks are enabled */
+  "config": {
+    /* Safety check settings */
+    "pii_detection_enabled": true,
+    "pii_allowed_with_consent": false,
+    "misinformation_detection_enabled": true,
+    "bias_detection_enabled": true
+    
+    /* 
+      NOTE: All pattern definitions (prohibited content, harmful content, 
+      PII patterns, injection patterns, etc.) are now centrally defined in:
+      common/data/patterns.rego
+      
+      You no longer need to include these in your input!
+    */
+  },
+  
+  /* Request identifier for linking with the corresponding input document */
+  "request_id": "req-12345-abcde"
+} 
