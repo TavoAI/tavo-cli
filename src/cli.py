@@ -5,6 +5,7 @@ import os
 import sys
 import subprocess
 import json
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -36,6 +37,8 @@ def tavo():
 @click.option("--project", help="Path to the project directory to scan", required=True)
 def scan(project):
     """Scan a project for policy compliance."""
+
+    click.echo("\n$ tavo scan --project .")
     
     # Display scanning message
     click.echo("\n🔍 Running Tavo Assessment Scan...")
@@ -46,6 +49,9 @@ def scan(project):
     click.echo("📄 Detected policies: 5")
     
     click.echo("\n---")
+
+    # Add a delay before showing results
+    time.sleep(2)
     
     # Policy violations
     click.echo("\n❌ MISSING CONTROLS DETECTED (1 issue)")
@@ -62,14 +68,32 @@ def scan(project):
     # Summary
     click.echo("❌ 1 missing control identified!")
     
-    # Generate audit log file
-    today = datetime.now().strftime("%Y-%m-%d")
-    audit_file = f".tavo/audit-{today}.json"
-    click.echo(f"\n📋 Audit log written to: `{audit_file}`")
-    
-    # Help text
-    click.echo("🔼 To request an exception, run: `tavo request-exception --policy=data_privacy`")
-    click.echo("\n💡 Tip: Run `tavo explain policy data_privacy` to view full rule & rationale.")
+    # Interactive section to add controls and mitigations
+    if click.confirm("\nWould you like to add controls and mitigations?", default=False):
+        click.echo("\n🛡️ Adding controls and mitigations...")
+        
+        # Simulate a loading effect
+        time.sleep(1)
+        
+        # Mock implementation of adding controls
+        click.echo("\n✅ Updated app/agents/compliance_agent.py:")
+        click.echo("  - Updated prompt templates to include PII detection")
+
+        click.echo("\n✅ Updated .gitlab-ci.yml:")
+        click.echo("  - Added privacy compliance check stage & tests")
+
+        click.echo("\n✅ Added app/services/pii_masker.py:")
+        click.echo("  - Implemented PII masking")
+
+        click.echo("\n✅ Added app/data/compliance_docs/gdpr_regulations.txt:")
+        click.echo("  - Instructions for RAG")
+
+        click.echo("\n✅ Added app/tests/validation/test_gdpr_compliance.py:")
+        click.echo("  - Test for GDPR PII compliance")
+        
+        click.echo("\n📝 All changes have been applied. Run another scan to verify fixes.")
+    else:
+        click.echo("\nNo controls were added. You can add them manually later.")
 
 @tavo.group()
 def server():
