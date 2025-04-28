@@ -4,6 +4,9 @@ import click
 import os
 import sys
 import subprocess
+import json
+import time
+from datetime import datetime
 from pathlib import Path
 
 # This will help us find the main server script relative to the CLI location
@@ -29,6 +32,77 @@ def get_server_script_path():
 def tavo():
     """TAVO - Open Policy Agent Verification and Testing CLI tool."""
     pass
+
+@tavo.command("scan")
+@click.option("--project", help="Path to the project directory to scan", required=True)
+def scan(project):
+    """Scan a project for policy compliance."""
+
+    click.echo("\n$ tavo scan --project .")
+    
+    # Display scanning message
+    click.echo("\n🔍 Running Tavo Assessment Scan...")
+    
+    # Mock scan results - in a real implementation, this would call actual scanning logic
+    click.echo("\n📁 Project: tavo-demo")
+    click.echo("🧠 Detected GenAI integration: OpenAI (gpt-4)")
+    click.echo("📄 Detected policies: 5")
+    
+    click.echo("\n---")
+    
+    # Add a delay before showing results
+    time.sleep(2)
+    
+    # Policy violations
+    click.echo("\n❌ MISSING CONTROLS DETECTED (1 issue)")
+    
+    click.echo("\n1. ⭕ Insufficient Privacy Controls")
+    click.echo("  → Risk: CRITICAL")
+    click.echo("  → File: ")
+    click.echo("    - app/agents/compliance_agent.py")
+    click.echo("    - .gitlab-ci.yml")
+    click.echo("  💡 Remediation: Implement data minimization and privacy by design principles.")
+    
+    click.echo("\n---")
+    
+    # Summary
+    click.echo("❌ 1 missing control identified!")
+    
+    # Interactive section to add controls and mitigations
+    if click.confirm("\nWould you like to add controls and mitigations?", default=False):
+        click.echo("\n🛡️ Adding controls and mitigations...")
+        
+        # Simulate a loading effect
+        time.sleep(1)
+        
+        # Merge the fix branch
+        click.echo("\n🔄 Merging privacy controls from tavo-fix branch...")
+        try:
+            subprocess.run(["git", "merge", "tavo-fix-721f21c5671121z2651b20ffd80k8d12", "--no-edit"], check=True)
+            click.echo("✅ Merge completed successfully!")
+        except subprocess.CalledProcessError:
+            click.echo("❌ Merge failed. Please resolve conflicts manually.")
+            return
+        
+        # Mock implementation of adding controls
+        click.echo("\n✅ Updated app/agents/compliance_agent.py:")
+        click.echo("  - Updated prompt templates to include PII detection")
+
+        click.echo("\n✅ Updated .gitlab-ci.yml:")
+        click.echo("  - Added privacy compliance check stage & tests")
+
+        click.echo("\n✅ Added app/services/pii_masker.py:")
+        click.echo("  - Implemented PII masking")
+
+        click.echo("\n✅ Added app/data/compliance_docs/gdpr_regulations.txt:")
+        click.echo("  - Instructions for RAG")
+
+        click.echo("\n✅ Added app/tests/validation/test_gdpr_compliance.py:")
+        click.echo("  - Test for GDPR PII compliance")
+        
+        click.echo("\n📝 All changes have been applied. Run another scan to verify fixes.")
+    else:
+        click.echo("\nNo controls were added. You can add them manually later.")
 
 @tavo.group()
 def server():
