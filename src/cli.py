@@ -37,8 +37,6 @@ def tavo():
 @click.option("--project", help="Path to the project directory to scan", required=True)
 def scan(project):
     """Scan a project for policy compliance."""
-
-    click.echo("\n$ tavo scan --project .")
     
     # Display scanning message
     click.echo("\n🔍 Running Tavo Assessment Scan...")
@@ -75,13 +73,29 @@ def scan(project):
         # Simulate a loading effect
         time.sleep(1)
         
-        # Merge the fix branch
-        click.echo("\n🔄 Merging privacy controls from tavo-fix branch...")
+        fix_branch = "tavo-fix-721f21c5671121z2651b20ffd80k8d12"
+        files_to_update = [
+            ".gitlab-ci.yml",
+            "app/agents/compliance_agent.py",
+            "app/data/compliance_docs/gdpr_regulations.txt",
+            "app/services/pii_masker.py",
+            "app/tests/validation/test_gdpr_compliance.py"
+        ]
+        
         try:
-            subprocess.run(["git", "merge", "tavo-fix-721f21c5671121z2651b20ffd80k8d12", "--no-edit"], check=True)
-            click.echo("✅ Merge completed successfully!")
-        except subprocess.CalledProcessError:
-            click.echo("❌ Merge failed. Please resolve conflicts manually.")
+            # Checkout each file from the fix branch
+            for file in files_to_update:
+                # Create directory if it doesn't exist (for new files)
+                file_dir = os.path.dirname(file)
+                if file_dir and not os.path.exists(file_dir):
+                    os.makedirs(file_dir, exist_ok=True)
+                
+                # Checkout the file from the fix branch
+                subprocess.run(["git", "checkout", fix_branch, "--", file], check=True)
+            
+            click.echo("✅ Changes applied successfully! Review the changes in your IDE before committing.")
+        except subprocess.CalledProcessError as e:
+            click.echo(f"❌ Failed to apply changes: {e}")
             return
         
         # Mock implementation of adding controls
@@ -100,7 +114,7 @@ def scan(project):
         click.echo("\n✅ Added app/tests/validation/test_gdpr_compliance.py:")
         click.echo("  - Test for GDPR PII compliance")
         
-        click.echo("\n📝 All changes have been applied. Run another scan to verify fixes.")
+        click.echo("\n📝 All changes have been applied as uncommitted changes. Review them in your IDE and commit when ready.")
     else:
         click.echo("\nNo controls were added. You can add them manually later.")
 
