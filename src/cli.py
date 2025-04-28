@@ -49,7 +49,7 @@ def scan(project):
     click.echo("📄 Detected policies: 5")
     
     click.echo("\n---")
-
+    
     # Add a delay before showing results
     time.sleep(2)
     
@@ -74,6 +74,15 @@ def scan(project):
         
         # Simulate a loading effect
         time.sleep(1)
+        
+        # Merge the fix branch
+        click.echo("\n🔄 Merging privacy controls from tavo-fix branch...")
+        try:
+            subprocess.run(["git", "merge", "tavo-fix-721f21c5671121z2651b20ffd80k8d12", "--no-edit"], check=True)
+            click.echo("✅ Merge completed successfully!")
+        except subprocess.CalledProcessError:
+            click.echo("❌ Merge failed. Please resolve conflicts manually.")
+            return
         
         # Mock implementation of adding controls
         click.echo("\n✅ Updated app/agents/compliance_agent.py:")
