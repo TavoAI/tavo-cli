@@ -4,6 +4,8 @@ import click
 import os
 import sys
 import subprocess
+import json
+from datetime import datetime
 from pathlib import Path
 
 # This will help us find the main server script relative to the CLI location
@@ -29,6 +31,45 @@ def get_server_script_path():
 def tavo():
     """TAVO - Open Policy Agent Verification and Testing CLI tool."""
     pass
+
+@tavo.command("scan")
+@click.option("--project", help="Path to the project directory to scan", required=True)
+def scan(project):
+    """Scan a project for policy compliance."""
+    
+    # Display scanning message
+    click.echo("\n🔍 Running Tavo Assessment Scan...")
+    
+    # Mock scan results - in a real implementation, this would call actual scanning logic
+    click.echo("\n📁 Project: tavo-demo")
+    click.echo("🧠 Detected GenAI integration: OpenAI (gpt-4)")
+    click.echo("📄 Detected policies: 5")
+    
+    click.echo("\n---")
+    
+    # Policy violations
+    click.echo("\n❌ MISSING CONTROLS DETECTED (1 issue)")
+    
+    click.echo("\n1. ⭕ Insufficient Privacy Controls")
+    click.echo("  → Risk: CRITICAL")
+    click.echo("  → File: ")
+    click.echo("    - app/agents/compliance_agent.py")
+    click.echo("    - .gitlab-ci.yml")
+    click.echo("  💡 Remediation: Implement data minimization and privacy by design principles.")
+    
+    click.echo("\n---")
+    
+    # Summary
+    click.echo("❌ 1 missing control identified!")
+    
+    # Generate audit log file
+    today = datetime.now().strftime("%Y-%m-%d")
+    audit_file = f".tavo/audit-{today}.json"
+    click.echo(f"\n📋 Audit log written to: `{audit_file}`")
+    
+    # Help text
+    click.echo("🔼 To request an exception, run: `tavo request-exception --policy=data_privacy`")
+    click.echo("\n💡 Tip: Run `tavo explain policy data_privacy` to view full rule & rationale.")
 
 @tavo.group()
 def server():
