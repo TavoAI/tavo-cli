@@ -44,7 +44,7 @@ def scan(project):
     # Mock scan results - in a real implementation, this would call actual scanning logic
     click.echo("\n📁 Project: tavo-demo")
     click.echo("🧠 Detected GenAI integration: OpenAI (gpt-4)")
-    click.echo("📄 Detected policies: 5")
+    click.echo("📄 Detected policies: 3")
     
     click.echo("\n---")
     
@@ -77,9 +77,9 @@ def scan(project):
         files_to_update = [
             ".gitlab-ci.yml",
             "app/agents/compliance_agent.py",
-            "app/data/compliance_docs/gdpr_regulations.txt",
+            "app/data/compliance_docs/eu_ai_act_regulations.txt",
             "app/services/pii_masker.py",
-            "app/tests/validation/test_gdpr_compliance.py"
+            "app/tests/validation/test_eu_ai_act_compliance.py"
         ]
         
         try:
@@ -108,11 +108,11 @@ def scan(project):
         click.echo("\n✅ Added app/services/pii_masker.py:")
         click.echo("  - Implemented PII masking")
 
-        click.echo("\n✅ Added app/data/compliance_docs/gdpr_regulations.txt:")
+        click.echo("\n✅ Added app/data/compliance_docs/eu_ai_act_regulations.txt:")
         click.echo("  - Instructions for RAG")
 
-        click.echo("\n✅ Added app/tests/validation/test_gdpr_compliance.py:")
-        click.echo("  - Test for GDPR PII compliance")
+        click.echo("\n✅ Added app/tests/validation/test_eu_ai_act_compliance.py:")
+        click.echo("  - Test for EU AI Act Personal Data Management")
         
         click.echo("\n📝 All changes have been applied as uncommitted changes. Review them in your IDE and commit when ready.")
     else:
