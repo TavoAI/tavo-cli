@@ -19,8 +19,8 @@ A comprehensive security scanning tool that combines **OpenGrep** pattern-based 
 - [Architecture](#️-architecture)
 - [Rule Management](#-rule-management)
 - [Development](#-development)
-- [Contributing](#contributing)
-- [License](#license)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ## 🛠️ Installation
 
