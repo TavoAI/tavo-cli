@@ -50,14 +50,41 @@ The build script will:
 
 ### Manual Setup
 
+#### Using pipenv (recommended)
+
 ```bash
 # Clone with submodules
 git clone --recursive https://github.com/your-org/tavo-cli.git
 cd tavo-cli
 
-# Set up Python environment
+# Install dependencies
 pipenv install --dev
+
+# Activate environment
 pipenv shell
+
+# Build OpenGrep
+cd opengrep
+make
+cd ..
+
+# Install the CLI
+pip install -e .
+```
+
+#### Using pip
+
+```bash
+# Clone with submodules
+git clone --recursive https://github.com/your-org/tavo-cli.git
+cd tavo-cli
+
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements-dev.txt
 
 # Build OpenGrep
 cd opengrep

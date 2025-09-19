@@ -84,7 +84,7 @@ setup_python_env() {
         pipenv install --dev
         log_success "Python environment setup complete with pipenv"
     else
-        log_warning "pipenv not found, using venv"
+        log_info "Using venv for environment management"
         python3 -m venv .venv
         source .venv/bin/activate
         pip install -r requirements-dev.txt

@@ -4,18 +4,21 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-appdirs = "*"
+# Development tools
 mypy = "==0.931"
 pytest = "*"
 pytest-snapshot = "*"
 pytest-xdist = "*"
+pytest-mock = "*"
+pytest-rerunfailures = "*"
+pytest-split = "*"
 tox = "*"
 requests-mock = "*"
 pypi-parker = "*"
 pytest-freezegun = "*"
-pytest-mock = "*"
-pytest-rerunfailures = "*"
-pytest-split = "*"
+flake8 = "*"
+
+# Type stubs (optional but recommended for development)
 types-colorama = "~=0.4.0"
 types-freezegun = "*"
 types-jinja2 = "*"
@@ -23,11 +26,15 @@ types-jsonschema = "==4.6.0"
 types-python-dateutil = "*"
 types-requests = "*"
 types-setuptools = "*"
+
+# Backports for older Python versions
 importlib_metadata = "*"
 importlib_resources = ">=1.4.0"
 typing_extensions = "*"
-flake8 = "*"
 
 [packages]
-jsonschema = "==4.6.1"
+# Core runtime dependencies
+click = ">=8.0.0"
+
+# OpenGrep (built from source as submodule)
 opengrep = {editable = true, path = "opengrep/cli"}
