@@ -285,7 +285,16 @@ The project uses GitHub Actions for continuous integration:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
+
+### Dependencies
+
+This project builds upon and integrates with several open source projects:
+
+- **[OpenGrep](https://github.com/opengrep/opengrep)** - LGPL 2.1 License
+- **[Open Policy Agent (OPA)](https://www.openpolicyagent.org/)** - Apache License 2.0
+
+The Apache 2.0 license is compatible with both LGPL and Apache licenses used by our dependencies.
 
 ## 🙏 Acknowledgments
 
@@ -303,3 +312,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Tavo.AI CLI** - Advanced security scanning for the AI era 🛡️
+
+Licensed under the [Apache License 2.0](LICENSE)
