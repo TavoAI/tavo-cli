@@ -1,0 +1,9 @@
+{
+  "policies": [
+    {
+      "id": "financial_data_protection_input",
+      "content": "package tavoai.financial.guardrails.financial_data_protection_input\\n\\ndefault allow = false\\n\\nallow if {\\n    input.content_type == \\\"input\\\"\\n    not contains_credit_card_data(input.content)\\n}\\n\\ncontains_credit_card_data(text) if {\\n    regex.match(`\\\\b(?:\\\\d[ -]*?){13,16}\\\\b`, text)\\n}",
+      "applicability": "input"
+    }
+  ]
+}

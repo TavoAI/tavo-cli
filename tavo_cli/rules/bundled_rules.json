@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "rules": {
+    "opengrep": {
+      "llm_security": {
+        "version": "1.0.0",
+        "rules": [
+          {
+            "id": "prompt_injection",
+            "pattern": "openai\\.ChatCompletion\\.create\\(.*\\$INPUT.*\\)",
+            "message": "Potential prompt injection vulnerability",
+            "severity": "HIGH"
+          },
+          {
+            "id": "api_key_exposure",
+            "pattern": "(?i)(api_key|apikey|openai_api_key)\\s*=\\s*[\"'][^\"']*[\"']",
+            "message": "Potential API key exposure in code",
+            "severity": "CRITICAL"
+          }
+        ]
+      }
+    },
+    "opa": {
+      "financial": {
+        "version": "1.0.0",
+        "policies": [
+          {
+            "id": "financial_data_protection_input",
+            "content": "package tavoai.financial.guardrails.financial_data_protection_input\\n\\ndefault allow = false\\n\\nallow if {\\n    input.content_type == \\\"input\\\"\\n    not contains_credit_card_data(input.content)\\n}\\n\\ncontains_credit_card_data(text) if {\\n    regex.match(`\\\\b(?:\\\\d[ -]*?){13,16}\\\\b`, text)\\n}",
+            "applicability": "input"
+          }
+        ]
+      },
+      "healthcare": {
+        "version": "1.0.0",
+        "policies": [
+          {
+            "id": "patient_data_protection_output",
+            "content": "package tavoai.healthcare.guardrails.patient_data_protection_output\\n\\ndefault allow = false\\n\\nallow if {\\n    input.content_type == \\\"output\\\"\\n    not contains_patient_identifiers(input.content)\\n}\\n\\ncontains_patient_identifiers(text) if {\\n    regex.match(`(?i)Patient\\\\s+(ID|Number|#):\\\\s*[A-Za-z0-9\\\\-]+`, text)\\n}",
+            "applicability": "output"
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "last_updated": "2024-01-15T10:00:00Z",
+    "source": "bundled"
+  }
+}

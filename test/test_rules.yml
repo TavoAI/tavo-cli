@@ -1,0 +1,14 @@
+rules:
+  - id: prompt_injection
+    message: Potential prompt injection vulnerability
+    languages: [python]
+    patterns:
+      - pattern: openai\.ChatCompletion\.create\(.*\$INPUT.*\)
+    severity: HIGH
+
+  - id: api_key_exposure
+    message: Potential API key exposure in code
+    languages: [python]
+    patterns:
+      - pattern: (?i)(api_key|apikey|openai_api_key)\s*=\s*["'][^"']*["']
+    severity: CRITICAL

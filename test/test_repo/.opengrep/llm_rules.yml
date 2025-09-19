@@ -1,0 +1,17 @@
+
+rules:
+  - id: prompt-injection
+    message: Potential prompt injection without sanitization.
+    languages: [python]
+    severity: WARNING
+    pattern: openai.ChatCompletion.create
+  - id: model-theft
+    message: Unencrypted model save detected.
+    languages: [python]
+    severity: ERROR
+    pattern: torch.save
+  - id: insecure-api-key
+    message: Hardcoded API key detected.
+    languages: [python]
+    severity: ERROR
+    pattern: sk-
