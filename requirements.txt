@@ -1,0 +1,7 @@
+# Production dependencies for Tavo.AI CLI
+
+click>=8.0.0
+pathlib2>=2.3.0
+jsonschema==4.6.1
+
+# OpenGrep is handled as a git submodule and built separately

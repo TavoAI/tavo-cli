@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "afbc6a7b304dedf84c3dc5a7a3a9c2a91ef48aa646cb25c301061a7dfc98c793"
+            "sha256": "2483cefaccd6bd51c6fb2f42ff7bc8f9e09d30e8cd3e4688cc0c6be2869d284d"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -259,7 +259,7 @@
         },
         "opengrep": {
             "editable": true,
-            "path": "../opengrep/cli"
+            "path": "opengrep/cli"
         },
         "packaging": {
             "hashes": [

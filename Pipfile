@@ -30,4 +30,4 @@ flake8 = "*"
 
 [packages]
 jsonschema = "==4.6.1"
-opengrep = {editable = true, path = "../opengrep/cli"}
+opengrep = {editable = true, path = "opengrep/cli"}

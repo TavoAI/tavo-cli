@@ -36,13 +36,31 @@ def scan(repo_path, rules_dir, opa_policy, output, ai_batch):
                    "Creating with example rules.")
         create_example_rules(rules_path)
 
-    # Run OpenGrep
-    opengrep_path = Path(__file__).parent / "../opengrep/bin/opengrep"
-    if not opengrep_path.exists():
-        # Try to find opengrep in PATH
-        opengrep_cmd = "opengrep"
+    # Run OpenGrep - try multiple possible locations
+    opengrep_cmd = None
+
+    # Try built binary first
+    built_path = (Path(__file__).parent /
+                  "../opengrep/_build/install/default/bin/opengrep-core")
+    if built_path.exists():
+        opengrep_cmd = str(built_path)
     else:
-        opengrep_cmd = str(opengrep_path)
+        # Try symlink
+        symlink_path = Path(__file__).parent / "../opengrep/bin/opengrep"
+        if symlink_path.exists():
+            opengrep_cmd = str(symlink_path)
+        else:
+            # Try system PATH
+            import shutil
+            if shutil.which("opengrep"):
+                opengrep_cmd = "opengrep"
+            else:
+                click.echo("Error: OpenGrep not found.")
+                click.echo("Build it with: cd opengrep && make")
+                click.echo("Or install: curl -fsSL")
+                click.echo("  https://raw.githubusercontent.com/opengrep/")
+                click.echo("  opengrep/main/install.sh | bash")
+                return
 
     cmd = [opengrep_cmd, 'scan', '--config', str(rules_path),
            '--json', repo_path]
@@ -88,8 +106,8 @@ def scan(repo_path, rules_dir, opa_policy, output, ai_batch):
         click.echo("OpenGrep scan timed out after 5 minutes")
         findings = []
     except FileNotFoundError:
-        click.echo("OpenGrep binary not found at "
-                   f"{opengrep_path}. Please ensure OpenGrep is built.")
+        click.echo("OpenGrep binary not found.")
+        click.echo("Please ensure OpenGrep is built.")
         return
 
     # Run OPA for additional policy checks
