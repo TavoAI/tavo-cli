@@ -77,8 +77,8 @@ class RuleManager:
             return self.bundled_rules["opengrep"][category].rules
         return []
 
-    def get_opa_policies(self, category: str = "financial"
-                        ) -> List[Dict[str, Any]]:
+    def get_opa_policies(self, category:
+                         str = "financial") -> List[Dict[str, Any]]:
         """Get OPA policies for a specific category."""
         if category in self.bundled_rules.get("opa", {}):
             return self.bundled_rules["opa"][category].rules
@@ -98,7 +98,7 @@ class RuleManager:
         return False
 
     def export_rules_to_file(self, rule_type: str, category: str,
-                            output_path: Path):
+                             output_path: Path):
         """Export rules to a file for use by OpenGrep or OPA."""
         if rule_type == "opengrep":
             rules = self.get_opengrep_rules(category)
