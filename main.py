@@ -54,6 +54,18 @@ def get_api_key() -> Optional[str]:
     return config.get('api_key')
 
 
+def get_session_token() -> Optional[str]:
+    """Get session token from config or environment."""
+    # Check environment variable first
+    session_token = os.getenv('TAVO_SESSION_TOKEN')
+    if session_token:
+        return session_token
+
+    # Check config file
+    config = load_config()
+    return config.get('session_token')
+
+
 def get_auth_tokens() -> Optional[dict]:
     """Get JWT tokens from config."""
     config = load_config()
@@ -76,8 +88,8 @@ def is_authenticated() -> bool:
 
 
 def has_api_access() -> bool:
-    """Check if user has API access configured (API key or JWT)."""
-    return get_api_key() is not None or is_authenticated()
+    """Check if user has API access configured (API key, JWT, or session token)."""
+    return get_api_key() is not None or is_authenticated() or get_session_token() is not None
 
 
 def get_base_url() -> str:
@@ -96,6 +108,8 @@ def make_api_request(method: str, endpoint: str, **kwargs) -> requests.Response:
     tokens = get_auth_tokens()
     if tokens:
         headers['Authorization'] = f"Bearer {tokens['access_token']}"
+    elif get_session_token():
+        headers['X-Session-Token'] = get_session_token()
     elif get_api_key():
         headers['X-API-Key'] = get_api_key()
     
@@ -146,7 +160,10 @@ def scan(repo_path, rules_dir, opa_policy, output, ai_batch, api):
     # Check API access
     if api and not has_api_access():
         click.echo("❌ API access required but no authentication found.", err=True)
-        click.echo("   Run 'tavo auth login' or 'tavo config set-api-key'", err=True)
+        click.echo("   Authenticate with:", err=True)
+        click.echo("   • 'tavo auth login' (recommended)", err=True)
+        click.echo("   • 'tavo config set-session-token'", err=True)
+        click.echo("   • 'tavo config set-api-key'", err=True)
         return
 
     if not api and not has_api_access():
@@ -169,7 +186,10 @@ def scan_with_api(repo_path: Path, output: str) -> None:
     """Scan repository using Tavo API."""
     if not has_api_access():
         click.echo("❌ No authentication configured.", err=True)
-        click.echo("   Run 'tavo auth login' or 'tavo config set-api-key'", err=True)
+        click.echo("   Authenticate with:", err=True)
+        click.echo("   • 'tavo auth login' (recommended)", err=True)
+        click.echo("   • 'tavo config set-session-token'", err=True)
+        click.echo("   • 'tavo config set-api-key'", err=True)
         return
 
     try:
@@ -702,6 +722,11 @@ def logout():
         return
     
     clear_auth_tokens()
+    # Also clear session token and API key
+    config = load_config()
+    config.pop('session_token', None)
+    config.pop('api_key', None)
+    save_config(config)
     click.echo("✅ Successfully logged out")
 
 
@@ -767,6 +792,55 @@ def clear_api_key():
         click.echo("✅ API key cleared")
     else:
         click.echo("No API key configured")
+
+
+@config.command("set-session-token")
+def set_session_token():
+    """Set session token for Tavo API access (web-based auth)."""
+    user = get_current_user()
+    if user:
+        click.echo(f"⚠️  Already authenticated as {user['email']}")
+        click.echo("   Session token will be used as fallback authentication")
+    
+    current_token = get_session_token()
+    if current_token:
+        masked_token = current_token[:8] + "..." if len(current_token) > 8 else current_token
+        click.echo(f"Current session token: {masked_token}")
+
+    session_token = click.prompt("Enter your Tavo session token", hide_input=True)
+    if not session_token:
+        click.echo("❌ Session token cannot be empty")
+        return
+
+    config = load_config()
+    config['session_token'] = session_token
+    save_config(config)
+    click.echo("✅ Session token configured successfully")
+    click.echo("   Note: JWT authentication (tavo auth login) is preferred")
+
+
+@config.command("get-session-token")
+def get_session_token_command():
+    """Display current session token (masked)."""
+    session_token = get_session_token()
+    if session_token:
+        masked_token = session_token[:8] + "..." if len(session_token) > 8 else session_token
+        click.echo(f"Session token: {masked_token}")
+    else:
+        click.echo("No session token configured")
+        click.echo("Run 'tavo config set-session-token' to configure")
+
+
+@config.command("clear-session-token")
+def clear_session_token():
+    """Remove session token configuration."""
+    config = load_config()
+    if 'session_token' in config:
+        del config['session_token']
+        save_config(config)
+        click.echo("✅ Session token cleared")
+    else:
+        click.echo("No session token configured")
 
 
 if __name__ == '__main__':
