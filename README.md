@@ -8,12 +8,13 @@ A comprehensive security scanning tool that combines **OpenGrep** pattern-based 
 - **Rule Management**: Flexible rule system supporting bundled, API-fetched, and local rules
 - **SARIF Output**: Industry-standard security report format
 - **LLM Security Focus**: Specialized rules for LLM applications and AI systems
-- **Batch AI Analysis**: Optional AI-powered analysis for ambiguous findings
+- **Batch AI Analysis**: Optional AI-powered analysis for advanced analysis and rules
 - **Modular Architecture**: Clean separation of concerns for easy extension
 
 ## 📋 Table of Contents
 
 - [Installation](#️-installation)
+- [Authentication](#-authentication)
 - [Quick Start](#-quick-start)
 - [Usage](#-usage)
 - [Architecture](#️-architecture)
@@ -34,7 +35,7 @@ A comprehensive security scanning tool that combines **OpenGrep** pattern-based 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/tavo-cli.git
+git clone https://github.com/TavoAI/tavo-cli.git
 cd tavo-cli
 
 # Run the automated build script
@@ -54,7 +55,7 @@ The build script will:
 
 ```bash
 # Clone with submodules
-git clone --recursive https://github.com/your-org/tavo-cli.git
+git clone --recursive https://github.com/TavoAI/tavo-cli.git
 cd tavo-cli
 
 # Install dependencies
@@ -76,7 +77,7 @@ pip install -e .
 
 ```bash
 # Clone with submodules
-git clone --recursive https://github.com/your-org/tavo-cli.git
+git clone --recursive https://github.com/TavoAI/tavo-cli.git
 cd tavo-cli
 
 # Create virtual environment
@@ -95,7 +96,115 @@ cd ..
 pip install -e .
 ```
 
-## 🚀 Quick Start
+## � Authentication
+
+Tavo CLI supports two authentication methods: **JWT-based account authentication** (recommended) and **API key authentication** (non-interactive).
+
+### JWT Authentication (Recommended for Interactive Use)
+
+JWT authentication provides secure, account-aware access with automatic token management and is ideal for active tool usage.
+
+#### Login
+
+```bash
+tavo auth login
+```
+
+This initiates OAuth2 device code flow:
+
+1. CLI requests device and user codes from Tavo API
+2. Displays verification URL and user code
+3. User visits URL in browser and enters code
+4. CLI polls for approval and stores JWT tokens
+
+Example output:
+
+```bash
+🔐 Starting device code authentication...
+📱 Go to: https://app.tavo.ai/auth/device
+🔢 Enter code: ABCD-1234
+⏳ Waiting for approval...
+✅ Successfully authenticated as user@example.com
+```
+
+#### Check Authentication Status
+
+```bash
+tavo auth whoami
+```
+
+Shows current authenticated user:
+
+```bash
+👤 Authenticated as: user@example.com
+📧 Email: user@example.com
+📝 Name: John Doe
+```
+
+#### Logout
+
+```bash
+tavo auth logout
+```
+
+Clears stored authentication tokens.
+
+### API Key Authentication (For Embedded Integrations)
+
+API key authentication is designed for embedded integrations, automated systems, and environments where JWT tokens might expire and not be renewable (such as GitHub Actions, CI/CD pipelines, and other headless environments).
+
+#### Set API Key
+
+```bash
+tavo config set-api-key
+```
+
+Prompts for API key and stores it securely.
+
+#### View API Key (Masked)
+
+```bash
+tavo config get-api-key
+```
+
+#### Remove API Key
+
+```bash
+tavo config clear-api-key
+```
+
+### Authentication Priority
+
+When both JWT tokens and API keys are configured:
+
+1. **JWT tokens are used first** (preferred for interactive use)
+2. **API keys serve as fallback** for embedded integrations
+
+### Configuration Storage
+
+Authentication data is stored securely in `~/.tavo/config.json`:
+
+```json
+{
+  "auth": {
+    "access_token": "eyJ...",
+    "refresh_token": "eyJ...",
+    "user": {
+      "id": "uuid",
+      "email": "user@example.com",
+      "first_name": "John",
+      "last_name": "Doe"
+    }
+  },
+  "api_key": "sk-... (fallback)"
+}
+```
+
+### Future Authentication Methods
+
+Additional authentication methods including OIDC will be available in future releases.
+
+## �🚀 Quick Start
 
 ```bash
 # Scan a repository for LLM security issues
@@ -123,7 +232,7 @@ Options:
   --rules-dir TEXT     Directory containing OpenGrep rules [default: .opengrep]
   --opa-policy TEXT    Directory for OPA Rego policies [default: opa/policies]
   --output TEXT        Output SARIF report file [default: scan_report.sarif]
-  --ai-batch           Enable batch AI polling for ambiguous issues
+  --ai-batch           Enable batch AI analysis for advanced analysis and rules
 ```
 
 ### Rule Management
@@ -305,9 +414,9 @@ The Apache 2.0 license is compatible with both LGPL and Apache licenses used by 
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-org/tavo-cli/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/tavo-cli/discussions)
-- **Documentation**: [Wiki](https://github.com/your-org/tavo-cli/wiki)
+- **Issues**: [GitHub Issues](https://github.com/TavoAI/tavo-cli/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/TavoAI/tavo-cli/discussions)
+- **Documentation**: [Wiki](https://github.com/TavoAI/tavo-cli/wiki)
 
 ---
 

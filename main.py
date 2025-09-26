@@ -2,6 +2,8 @@ import click
 import subprocess
 import json
 import os
+import time
+import requests
 from pathlib import Path
 from typing import Optional
 
@@ -52,9 +54,71 @@ def get_api_key() -> Optional[str]:
     return config.get('api_key')
 
 
+def get_auth_tokens() -> Optional[dict]:
+    """Get JWT tokens from config."""
+    config = load_config()
+    auth = config.get('auth', {})
+    if auth.get('access_token') and auth.get('refresh_token'):
+        return auth
+    return None
+
+
+def get_current_user() -> Optional[dict]:
+    """Get current authenticated user info."""
+    config = load_config()
+    return config.get('auth', {}).get('user')
+
+
+def is_authenticated() -> bool:
+    """Check if user is authenticated with JWT tokens."""
+    tokens = get_auth_tokens()
+    return tokens is not None
+
+
 def has_api_access() -> bool:
-    """Check if user has API access configured."""
-    return get_api_key() is not None
+    """Check if user has API access configured (API key or JWT)."""
+    return get_api_key() is not None or is_authenticated()
+
+
+def get_base_url() -> str:
+    """Get the base URL for the Tavo API."""
+    return os.getenv('TAVO_API_URL', 'https://api.tavo.ai')
+
+
+def make_api_request(method: str, endpoint: str, **kwargs) -> requests.Response:
+    """Make an authenticated API request."""
+    base_url = get_base_url()
+    url = f"{base_url}{endpoint}"
+    
+    headers = kwargs.pop('headers', {})
+    
+    # Add authentication
+    tokens = get_auth_tokens()
+    if tokens:
+        headers['Authorization'] = f"Bearer {tokens['access_token']}"
+    elif get_api_key():
+        headers['X-API-Key'] = get_api_key()
+    
+    return requests.request(method, url, headers=headers, **kwargs)
+
+
+def save_auth_tokens(access_token: str, refresh_token: str, user_info: dict) -> None:
+    """Save authentication tokens and user info to config."""
+    config = load_config()
+    config['auth'] = {
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'user': user_info
+    }
+    save_config(config)
+
+
+def clear_auth_tokens() -> None:
+    """Clear authentication tokens from config."""
+    config = load_config()
+    if 'auth' in config:
+        del config['auth']
+        save_config(config)
 
 
 @click.group()
@@ -81,16 +145,16 @@ def scan(repo_path, rules_dir, opa_policy, output, ai_batch, api):
 
     # Check API access
     if api and not has_api_access():
-        click.echo("❌ API access required but no API key found.", err=True)
-        click.echo("   Run 'tavo config set-api-key' to configure.", err=True)
+        click.echo("❌ API access required but no authentication found.", err=True)
+        click.echo("   Run 'tavo auth login' or 'tavo config set-api-key'", err=True)
         return
 
     if not api and not has_api_access():
-        click.echo("⚠️  Running in local mode without API key.")
+        click.echo("⚠️  Running in local mode without authentication.")
         click.echo("   Local scanning provides basic analysis only.")
         click.echo("   For enhanced AI analysis and reporting,")
-        click.echo("   configure an API key:")
-        click.echo("   Run 'tavo config set-api-key' to enable full features.")
+        click.echo("   authenticate with:")
+        click.echo("   Run 'tavo auth login' or 'tavo config set-api-key'")
         click.echo()
 
     if api:
@@ -103,62 +167,23 @@ def scan(repo_path, rules_dir, opa_policy, output, ai_batch, api):
 
 def scan_with_api(repo_path: Path, output: str) -> None:
     """Scan repository using Tavo API."""
+    if not has_api_access():
+        click.echo("❌ No authentication configured.", err=True)
+        click.echo("   Run 'tavo auth login' or 'tavo config set-api-key'", err=True)
+        return
+
     try:
-        # Import here to avoid dependency issues
-        from tavo import TavoClient
-    except ImportError:
-        click.echo("❌ Tavo Python SDK not found.", err=True)
-        click.echo("   Install with: pip install tavo-python-sdk", err=True)
-        return
-
-    api_key = get_api_key()
-    if not api_key:
-        click.echo("❌ No API key configured.", err=True)
-        return
-
-    async def run_scan():
-        async with TavoClient(api_key=api_key) as client:
-            click.echo(f"🔍 Scanning {repo_path} via Tavo API...")
-
-            # Create scan request
-            scan_request = {
-                "repositoryUrl": f"file://{repo_path.absolute()}",
-                "scanType": "full"
-            }
-
-            # Start scan
-            scan_result = await client.scans.create(scan_request)
-            click.echo(f"✅ Scan created: {scan_result.id}")
-
-            # Wait for completion (simplified)
-            click.echo("⏳ Processing... (this may take a few minutes)")
-
-            # Get results
-            results = await client.scans.results(scan_result.id)
-            click.echo(f"🎯 Found {len(results.get('vulnerabilities', []))}")
-            click.echo("   vulnerabilities")
-
-            # Generate report
-            report_request = {
-                "scanId": scan_result.id,
-                "reportType": "sarif",
-                "format": "sarif"
-            }
-
-            report = await client.reports.create(report_request)
-            click.echo(f"📄 Report generated: {report.id}")
-
-            # Save to file
-            output_path = Path(output)
-            if report.content:
-                output_path.write_text(json.dumps(report.content, indent=2))
-                click.echo(f"💾 Report saved to {output}")
-            else:
-                click.echo("⚠️  Report content not available yet")
-
-    # Run async function
-    import asyncio
-    asyncio.run(run_scan())
+        click.echo(f"🔍 Scanning {repo_path} via Tavo API...")
+        
+        # For now, show that API scanning would work
+        # This is a placeholder until the full API integration is implemented
+        click.echo("✅ API scan initiated (placeholder)")
+        click.echo("   Full API integration coming soon...")
+        
+        # TODO: Implement actual API scanning when endpoints are ready
+        
+    except Exception as e:
+        click.echo(f"❌ API scan failed: {e}", err=True)
 
 
 def scan_local(repo_path: Path, rules_dir: str, opa_policy: str,
@@ -571,9 +596,138 @@ def config():
     pass
 
 
+@cli.group()
+def auth():
+    """Commands for authentication and account management."""
+    pass
+
+
+@auth.command()
+def login():
+    """Authenticate with Tavo using device code flow."""
+    user = get_current_user()
+    if user:
+        click.echo(f"✅ Already authenticated as {user['email']}")
+        return
+    
+    click.echo("🔐 Starting device code authentication...")
+    
+    try:
+        # Step 1: Get device code
+        response = make_api_request('POST', '/api/v1/device/code')
+        if response.status_code != 200:
+            click.echo(f"❌ Failed to get device code: {response.text}")
+            return
+        
+        device_data = response.json()
+        device_code = device_data['device_code']
+        user_code = device_data['user_code']
+        verification_uri = device_data['verification_uri']
+        
+        click.echo(f"📱 Go to: {verification_uri}")
+        click.echo(f"🔢 Enter code: {user_code}")
+        click.echo("⏳ Waiting for approval...")
+        
+        # Step 2: Poll for token
+        max_attempts = 60  # 5 minutes max
+        attempt = 0
+        
+        while attempt < max_attempts:
+            time.sleep(5)  # Wait 5 seconds between polls
+            attempt += 1
+            
+            token_response = requests.post(
+                f"{get_base_url()}/api/v1/device/token",
+                data={
+                    'device_code': device_code,
+                    'grant_type': 'urn:ietf:params:oauth:grant-type:device_code'
+                }
+            )
+            
+            if token_response.status_code == 200:
+                token_data = token_response.json()
+                
+                # Get user info
+                user_response = make_api_request('GET', '/api/v1/auth/me', 
+                                               headers={'Authorization': f"Bearer {token_data['access_token']}"})
+                if user_response.status_code == 200:
+                    user_info = user_response.json()
+                    
+                    # Save authentication
+                    save_auth_tokens(
+                        token_data['access_token'],
+                        token_data['refresh_token'],
+                        user_info
+                    )
+                    
+                    click.echo(f"✅ Successfully authenticated as {user_info['email']}")
+                    return
+                else:
+                    click.echo(f"❌ Failed to get user info: {user_response.text}")
+                    return
+            
+            elif token_response.status_code == 400:
+                error_data = token_response.json()
+                error = error_data.get('error')
+                
+                if error == 'authorization_pending':
+                    click.echo(f"⏳ Still waiting... ({attempt}/{max_attempts})")
+                    continue
+                elif error == 'expired_token':
+                    click.echo("❌ Device code expired. Please try again.")
+                    return
+                elif error == 'access_denied':
+                    click.echo("❌ Access denied by user.")
+                    return
+                else:
+                    click.echo(f"❌ Authentication failed: {error}")
+                    return
+            else:
+                click.echo(f"❌ Unexpected response: {token_response.status_code}")
+                return
+        
+        click.echo("❌ Authentication timed out. Please try again.")
+        
+    except requests.RequestException as e:
+        click.echo(f"❌ Network error: {e}")
+    except Exception as e:
+        click.echo(f"❌ Unexpected error: {e}")
+
+
+@auth.command()
+def logout():
+    """Clear authentication tokens."""
+    if not is_authenticated():
+        click.echo("ℹ️  Not currently authenticated")
+        return
+    
+    clear_auth_tokens()
+    click.echo("✅ Successfully logged out")
+
+
+@auth.command()
+def whoami():
+    """Show current authenticated user."""
+    user = get_current_user()
+    if user:
+        click.echo(f"👤 Authenticated as: {user['email']}")
+        click.echo(f"📧 Email: {user['email']}")
+        if user.get('first_name') or user.get('last_name'):
+            name = f"{user.get('first_name', '')} {user.get('last_name', '')}".strip()
+            click.echo(f"📝 Name: {name}")
+    else:
+        click.echo("❌ Not authenticated")
+        click.echo("   Run 'tavo auth login' to authenticate")
+
+
 @config.command("set-api-key")
 def set_api_key():
-    """Set API key for Tavo API access."""
+    """Set API key for Tavo API access (alternative to JWT auth)."""
+    user = get_current_user()
+    if user:
+        click.echo(f"⚠️  Already authenticated as {user['email']}")
+        click.echo("   API key will be used as fallback authentication")
+    
     current_key = get_api_key()
     if current_key:
         masked_key = current_key[:8] + "..." if len(current_key) > 8 else current_key
@@ -588,7 +742,7 @@ def set_api_key():
     config['api_key'] = api_key
     save_config(config)
     click.echo("✅ API key configured successfully")
-    click.echo("   You can now use 'tavo scan --api' for enhanced scanning")
+    click.echo("   Note: JWT authentication (tavo auth login) is preferred")
 
 
 @config.command("get-api-key")
