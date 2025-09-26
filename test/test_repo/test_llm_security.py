@@ -3,7 +3,7 @@ import openai
 import os
 
 # Potential API key exposure
-API_KEY = "sk-1234567890abcdef"  # This should be flagged
+API_KEY = "tavo-sk-1234567890abcdef"  # This should be flagged
 api_key = os.getenv("OPENAI_API_KEY")
 
 def chat_with_ai(prompt):

@@ -196,7 +196,7 @@ Authentication data is stored securely in `~/.tavo/config.json`:
       "last_name": "Doe"
     }
   },
-  "api_key": "sk-... (fallback)"
+  "api_key": "tavo-sk-... (fallback)"
 }
 ```
 

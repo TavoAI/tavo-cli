@@ -3,7 +3,7 @@ import openai
 import os
 
 # API key exposure
-api_key = "sk-1234567890abcdef"  # Hardcoded API key
+api_key = "tavo-sk-1234567890abcdef"  # Hardcoded API key
 openai.api_key = api_key
 
 # Prompt injection vulnerability

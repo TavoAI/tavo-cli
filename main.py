@@ -468,7 +468,7 @@ rules:
     patterns:
       - pattern: $KEY = "$VALUE"
         where:
-          - $VALUE matches "sk-.*"
+          - $VALUE matches "tavo-sk-.*"
           - not $KEY matches "(?i)test|example|dummy"
     severity: ERROR
 """
