@@ -121,7 +121,7 @@ Example output:
 
 ```bash
 🔐 Starting device code authentication...
-📱 Go to: https://app.tavo.ai/auth/device
+📱 Go to: https://app.tavoai.net/auth/device
 🔢 Enter code: ABCD-1234
 ⏳ Waiting for approval...
 ✅ Successfully authenticated as user@example.com

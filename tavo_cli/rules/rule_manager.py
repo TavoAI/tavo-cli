@@ -31,8 +31,8 @@ class RuleManagerConfig:
     def __post_init__(self):
         if self.api_endpoints is None:
             self.api_endpoints = [
-                "https://api.tavo.ai/rules/opengrep",
-                "https://api.tavo.ai/rules/opa"
+                "https://api.tavoai.net/rules/opengrep",
+                "https://api.tavoai.net/rules/opa"
             ]
 
 

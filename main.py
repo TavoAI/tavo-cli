@@ -82,7 +82,7 @@ def has_api_access() -> bool:
 
 def get_base_url() -> str:
     """Get the base URL for the Tavo API."""
-    return os.getenv('TAVO_API_URL', 'https://api.tavo.ai')
+    return os.getenv('TAVO_API_URL', 'https://api.tavoai.net')
 
 
 def make_api_request(method: str, endpoint: str, **kwargs) -> requests.Response:

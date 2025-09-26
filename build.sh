@@ -179,8 +179,8 @@ setup_config() {
     "version": "1.0.0",
     "cache_ttl_hours": 24,
     "api_endpoints": [
-        "https://api.tavo.ai/rules/opengrep",
-        "https://api.tavo.ai/rules/opa"
+        "https://api.tavoai.net/rules/opengrep",
+        "https://api.tavoai.net/rules/opa"
     ],
     "log_level": "INFO"
 }
