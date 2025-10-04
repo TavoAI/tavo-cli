@@ -5,3 +5,11 @@ Caching: Implement TTL-based caching for API-fetched rules
 Paid Rules: Add authentication for premium rule sets
 Make rules available/download based on license, but also let user make own
 Add rule filtering by name or directory, but online ui allows rule set naming and building
+
+- [x] **CLI Rule Commands**
+  - [x] Rule manager integration with tavo-rules repository
+  - [ ] `tavo rules list` - List available rule bundles
+  - [ ] `tavo rules install <bundle>` - Install rule bundle locally
+  - [ ] `tavo rules update` - Update installed rule bundles
+  - [ ] `tavo rules create <name>` - Create custom rule bundle
+  - [ ] `tavo rules validate <path>` - Validate rule syntax
