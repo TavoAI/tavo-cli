@@ -1,4 +1,4 @@
-# Production dependencies for Tavo.AI CLI
+# Production dependencies for Tavo AI CLI
 click>=8.0.0
 tavo-python-sdk>=0.1.0
 

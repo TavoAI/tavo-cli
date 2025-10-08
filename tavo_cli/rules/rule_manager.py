@@ -1,4 +1,4 @@
-"""Rule management system for Tavo.AI CLI."""
+"""Rule management system for Tavo AI CLI."""
 
 import json
 import logging

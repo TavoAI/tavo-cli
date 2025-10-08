@@ -1,4 +1,4 @@
-# Development dependencies for Tavo.AI CLI
+# Development dependencies for Tavo AI CLI
 # For users who prefer pip over pipenv
 
 # Core dependencies

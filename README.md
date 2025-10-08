@@ -1,4 +1,4 @@
-# Tavo.AI CLI
+# Tavo AI CLI
 
 A comprehensive security scanning tool that combines **OpenGrep** pattern-based analysis with **OPA (Open Policy Agent)** policy evaluation for advanced LLM security assessments.
 
@@ -288,7 +288,7 @@ tavo-cli/
 ### Rule Sources
 
 1. **Bundled Rules**: Pre-packaged rules included with the CLI
-2. **API Rules**: Fresh rules fetched from Tavo.AI API
+2. **API Rules**: Fresh rules fetched from Tavo AI API
 3. **Local Rules**: Custom rules in your repository
 
 ### Rule Types
@@ -420,6 +420,6 @@ The Apache 2.0 license is compatible with both LGPL and Apache licenses used by 
 
 ---
 
-**Tavo.AI CLI** - Advanced security scanning for the AI era 🛡️
+**Tavo AI CLI** - Advanced security scanning for the AI era 🛡️
 
 Licensed under the [Apache License 2.0](LICENSE)

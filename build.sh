@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Tavo.AI CLI Build Script
-# This script automates the setup and build process for the Tavo.AI CLI
+# Tavo AI CLI Build Script
+# This script automates the setup and build process for the Tavo AI CLI
 
 set -e  # Exit on any error
 
@@ -264,7 +264,7 @@ print_usage() {
 # Main build process
 main() {
     echo "========================================"
-    echo "  Tavo.AI CLI Build Script"
+    echo "  Tavo AI CLI Build Script"
     echo "========================================"
     echo ""
 
