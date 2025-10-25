@@ -130,3 +130,4 @@ results/
 test_outputs/
 temp/
 logs/
+bin/tavo-scanner

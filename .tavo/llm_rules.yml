@@ -1,0 +1,25 @@
+
+rules:
+  - id: prompt-injection
+    message: Potential prompt injection without sanitization.
+    languages: [python]
+    patterns:
+      - pattern: openai.ChatCompletion.create(..., $INPUT)
+        where: not exists-parent prompt.format($INPUT, ...)
+    severity: WARNING
+  - id: model-theft
+    message: Unencrypted model save detected.
+    languages: [python]
+    patterns:
+      - pattern: torch.save($MODEL, ...)
+        where: not exists-parent encrypt(...)
+    severity: ERROR
+  - id: insecure-api-key
+    message: Hardcoded API key detected.
+    languages: [python]
+    patterns:
+      - pattern: $KEY = "$VALUE"
+        where:
+          - $VALUE matches "tavo-sk-.*"
+          - not $KEY matches "(?i)test|example|dummy"
+    severity: ERROR

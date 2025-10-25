@@ -36,5 +36,5 @@ typing_extensions = "*"
 # Core runtime dependencies
 click = ">=8.0.0"
 
-# OpenGrep (built from source as submodule)
-opengrep = {editable = true, path = "opengrep/cli"}
+# Tavo Scanner (binary downloaded separately)
+# All other dependencies (json, pathlib, subprocess, etc.) are built into Python 3.8+

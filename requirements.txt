@@ -2,5 +2,5 @@
 click>=8.3.0
 tavo-sdk>=0.1.0
 
-# Note: OpenGrep is handled as a git submodule and built separately
+# Note: Tavo Scanner is handled as a binary download
 # All other dependencies (json, pathlib, subprocess, etc.) are built into Python 3.8+

@@ -148,7 +148,7 @@ def cli():
 @cli.command()
 @click.argument("repo_path", type=click.Path(exists=True))
 @click.option(
-    "--rules-dir", default=".opengrep", help="Directory containing OpenGrep rules."
+    "--rules-dir", default=".tavo", help="Directory containing Tavo Scanner rules."
 )
 @click.option(
     "--opa-policy", default="opa/policies", help="Directory for OPA Rego policies."
@@ -216,7 +216,7 @@ def scan_with_api(repo_path: Path, output: str) -> None:
 def scan_local(
     repo_path: Path, rules_dir: str, opa_policy: str, output: str, ai_batch: bool
 ) -> None:
-    """Run local scanning with OpenGrep and OPA."""
+    """Run local scanning with Tavo Scanner."""
     rules_path = repo_path / rules_dir
     opa_path = repo_path / opa_policy
 
@@ -227,72 +227,48 @@ def scan_local(
         )
         create_example_rules(rules_path)
 
-    # Run OpenGrep - try multiple possible locations
-    opengrep_cmd = None
+    # Run Tavo Scanner - try multiple possible locations
+    scanner_cmd = None
 
-    # Try built binary first
-    built_path = (
-        Path(__file__).parent / "../opengrep/_build/install/default/bin/opengrep-core"
-    )
-    if built_path.exists():
-        opengrep_cmd = str(built_path)
+    # Try bundled binary first
+    bundled_path = Path(__file__).parent / "bin" / "tavo-scanner"
+    if bundled_path.exists():
+        scanner_cmd = str(bundled_path)
     else:
-        # Try symlink
-        symlink_path = Path(__file__).parent / "../opengrep/bin/opengrep"
-        if symlink_path.exists():
-            opengrep_cmd = str(symlink_path)
+        # Try system PATH
+        import shutil
+
+        if shutil.which("tavo-scanner"):
+            scanner_cmd = "tavo-scanner"
         else:
-            # Try system PATH
-            import shutil
+            click.echo("Error: Tavo Scanner not found.")
+            click.echo("Please ensure Tavo Scanner is installed.")
+            click.echo("Run: ./build.sh")
+            return
 
-            if shutil.which("opengrep"):
-                opengrep_cmd = "opengrep"
-            else:
-                click.echo("Error: OpenGrep not found.")
-                click.echo("Build it with: cd opengrep && make")
-                click.echo("Or install: curl -fsSL")
-                click.echo("  https://raw.githubusercontent.com/opengrep/")
-                click.echo("  opengrep/main/install.sh | bash")
-                return
-
-    cmd = [opengrep_cmd, "scan", "--config", str(rules_path), "--json", str(repo_path)]
+    # Use tavo-scanner with JSON format
+    cmd = [scanner_cmd, "--format", "json", str(repo_path)]
     click.echo(f"Running: {' '.join(cmd)}")
 
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         findings = []
 
-        # Try to extract JSON from stdout
-        # (it might be mixed with formatted output)
-        stdout_output = result.stdout.strip()
-        json_start = stdout_output.find("{")
-        json_end = stdout_output.rfind("}") + 1
-
-        if json_start != -1 and json_end > json_start:
-            json_content = stdout_output[json_start:json_end]
+        if result.returncode == 0:
+            # Parse JSON output directly
             try:
-                scan_results = json.loads(json_content)
-                findings = scan_results.get("results", [])
-                click.echo("OpenGrep scan completed. " f"Found {len(findings)} issues.")
+                scan_results = json.loads(result.stdout)
+                # Tavo Scanner returns findings in different format - adjust as needed
+                findings = scan_results.get("results", scan_results.get("findings", []))
+                click.echo(f"Tavo Scanner completed. Found {len(findings)} issues.")
             except json.JSONDecodeError:
-                click.echo(f"Failed to parse JSON content: {json_content}")
+                click.echo(f"Failed to parse JSON output: {result.stdout}")
                 findings = []
         else:
-            click.echo(f"No JSON found in output. stdout: {stdout_output}")
+            click.echo(f"Tavo Scanner error (exit code {result.returncode}): {result.stderr}")
+            if result.stdout:
+                click.echo(f"Tavo Scanner stdout: {result.stdout}")
             findings = []
-
-        if result.returncode != 0 and not findings:
-            click.echo(
-                "OpenGrep error " f"(exit code {result.returncode}): {result.stderr}"
-            )
-            if result.stdout:
-                click.echo(f"OpenGrep stdout: {result.stdout}")
-        else:
-            click.echo(
-                "OpenGrep error " f"(exit code {result.returncode}): {result.stderr}"
-            )
-            if result.stdout:
-                click.echo(f"OpenGrep stdout: {result.stdout}")
 
         # Save results to SARIF file
         sarif_output = generate_sarif_report(findings)
@@ -313,106 +289,6 @@ def scan_local(
         click.echo("Scan timed out after 5 minutes")
     except Exception as e:
         click.echo(f"Scan failed: {e}")
-    rules_path = Path(repo_path) / rules_dir
-    opa_path = Path(repo_path) / opa_policy
-
-    # Ensure rules directory exists with example rules
-    if not rules_path.exists():
-        click.echo(
-            f"Rules directory {rules_path} not found. " "Creating with example rules."
-        )
-        create_example_rules(rules_path)
-
-    # Run OpenGrep - try multiple possible locations
-    opengrep_cmd = None
-
-    # Try built binary first
-    built_path = (
-        Path(__file__).parent / "../opengrep/_build/install/default/bin/opengrep-core"
-    )
-    if built_path.exists():
-        opengrep_cmd = str(built_path)
-    else:
-        # Try symlink
-        symlink_path = Path(__file__).parent / "../opengrep/bin/opengrep"
-        if symlink_path.exists():
-            opengrep_cmd = str(symlink_path)
-        else:
-            # Try system PATH
-            import shutil
-
-            if shutil.which("opengrep"):
-                opengrep_cmd = "opengrep"
-            else:
-                click.echo("Error: OpenGrep not found.")
-                click.echo("Build it with: cd opengrep && make")
-                click.echo("Or install: curl -fsSL")
-                click.echo("  https://raw.githubusercontent.com/opengrep/")
-                click.echo("  opengrep/main/install.sh | bash")
-                return
-
-    cmd = [opengrep_cmd, "scan", "--config", str(rules_path), "--json", repo_path]
-    click.echo(f"Running: {' '.join(cmd)}")
-
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        findings = []
-
-        # Try to extract JSON from stdout
-        # (it might be mixed with formatted output)
-        stdout_output = result.stdout.strip()
-        json_start = stdout_output.find("{")
-        json_end = stdout_output.rfind("}") + 1
-
-        if json_start != -1 and json_end > json_start:
-            json_content = stdout_output[json_start:json_end]
-            try:
-                scan_results = json.loads(json_content)
-                findings = scan_results.get("results", [])
-                click.echo("OpenGrep scan completed. " f"Found {len(findings)} issues.")
-            except json.JSONDecodeError:
-                click.echo(f"Failed to parse JSON content: {json_content}")
-                findings = []
-        else:
-            click.echo(f"No JSON found in output. stdout: {stdout_output}")
-            findings = []
-
-        if result.returncode != 0 and not findings:
-            click.echo(
-                "OpenGrep error " f"(exit code {result.returncode}): {result.stderr}"
-            )
-            if result.stdout:
-                click.echo(f"OpenGrep stdout: {result.stdout}")
-        else:
-            click.echo(
-                "OpenGrep error " f"(exit code {result.returncode}): {result.stderr}"
-            )
-            if result.stderr:
-                click.echo(f"OpenGrep stderr: {result.stderr}")
-
-    except subprocess.TimeoutExpired:
-        click.echo("OpenGrep scan timed out after 5 minutes")
-        findings = []
-    except FileNotFoundError:
-        click.echo("OpenGrep binary not found.")
-        click.echo("Please ensure OpenGrep is built.")
-        return
-
-    # Run OPA for additional policy checks
-    if opa_path.exists():
-        click.echo("Running OPA policy checks...")
-        opa_findings = run_opa_checks(opa_path, findings)
-        findings.extend(opa_findings)
-
-    # Generate SARIF report
-    sarif_report = generate_sarif(findings, repo_path)
-    with open(output, "w") as f:
-        json.dump(sarif_report, f, indent=2)
-    click.echo(f"Scan complete. SARIF report saved to {output}.")
-
-    if ai_batch and findings:
-        click.echo("Escalating ambiguous findings to AI...")
-        # Implement batch logic here
 
 
 @cli.command()
@@ -521,7 +397,7 @@ rules:
 
 @cli.group()
 def rules():
-    """Commands for managing OpenGrep and OPA rules."""
+    """Commands for managing Tavo Scanner rules."""
     pass
 
 
@@ -549,11 +425,11 @@ def list_rules():
 
 
 @rules.command("export")
-@click.argument("rule_type", type=click.Choice(["opengrep", "opa"]))
+@click.argument("rule_type", type=click.Choice(["tavo-scanner", "opa"]))
 @click.argument("category")
 @click.argument("output_path", type=click.Path())
 def export_rules(rule_type, category, output_path):
-    """Export rules to a file for use with OpenGrep or OPA."""
+    """Export rules to a file for use with Tavo Scanner or OPA."""
     try:
         from tavo_cli.rules import RuleManager, RuleManagerConfig
 

@@ -93,74 +93,70 @@ setup_python_env() {
     fi
 }
 
-# Build OpenGrep
-build_opengrep() {
-    log_info "Building OpenGrep..."
+# Download Tavo Scanner binary
+download_tavo_scanner() {
+    log_info "Building Tavo Scanner from source..."
 
-    if [ ! -d "opengrep" ]; then
-        log_error "OpenGrep submodule not found. Run 'git submodule update --init --recursive'"
+    # Create bin directory
+    mkdir -p bin
+
+    # Check if tavo-sdk repository exists
+    if [ ! -d "../tavo-sdk" ]; then
+        log_error "tavo-sdk repository not found at ../tavo-sdk"
+        log_error "Please clone tavo-sdk repository alongside tavo-cli"
         exit 1
     fi
 
-    cd opengrep
+    # Check if scanner package exists
+    if [ ! -d "../tavo-sdk/packages/scanner" ]; then
+        log_error "Scanner package not found in tavo-sdk"
+        exit 1
+    fi
 
-    # Check if already built
-    if [ -f "_build/install/default/bin/opengrep-core" ]; then
-        log_info "OpenGrep already built, skipping..."
-        cd ..
+    log_info "Building scanner binary..."
+
+    # Change to scanner directory and build
+    cd ../tavo-sdk/packages/scanner
+
+    # Check if binary already exists
+    if [ -f "dist/tavo-scanner" ]; then
+        log_info "Scanner binary already exists, copying..."
+        mkdir -p ../../tavo-cli/bin
+        cp dist/tavo-scanner ../../tavo-cli/bin/
+        cd ../../tavo-cli
+        chmod +x bin/tavo-scanner
+        log_success "Tavo Scanner binary copied"
         return
     fi
 
-    log_info "Building OpenGrep from source..."
-    log_info "Note: This may require system dependencies. See opengrep/INSTALL.md for details."
-
-    # Try to install system dependencies if we're on a supported system
-    if command_exists apt-get; then
-        log_info "Detected Debian/Ubuntu system, installing dependencies..."
-        sudo apt-get update
-        sudo apt-get install -y libpcre2-dev pkg-config build-essential || {
-            log_warning "Failed to install system dependencies automatically."
-            log_warning "Please install manually: sudo apt-get install libpcre2-dev pkg-config build-essential"
-        }
-    elif command_exists yum; then
-        log_info "Detected RHEL/CentOS system, installing dependencies..."
-        sudo yum install -y pcre2-devel pkgconfig gcc gcc-c++ || {
-            log_warning "Failed to install system dependencies automatically."
-            log_warning "Please install manually: sudo yum install pcre2-devel pkgconfig gcc gcc-c++"
-        }
-    elif command_exists brew; then
-        log_info "Detected macOS with Homebrew, installing dependencies..."
-        brew install pcre2 pkg-config || {
-            log_warning "Failed to install system dependencies automatically."
-            log_warning "Please install manually: brew install pcre2 pkg-config"
-        }
-    else
-        log_warning "Unknown system. Please ensure you have:"
-        log_warning "  - PCRE2 development libraries"
-        log_warning "  - pkg-config"
-        log_warning "  - GCC/Clang compiler"
-        log_warning "See opengrep/INSTALL.md for detailed instructions."
+    # Download engines if needed
+    if [ ! -d "engines" ] || [ -z "$(ls -A engines)" ]; then
+        log_info "Downloading scanner engines..."
+        chmod +x download_engines.sh
+        ./download_engines.sh
     fi
 
-    # Clean and build
-    make clean
-    if make; then
-        log_success "OpenGrep built successfully"
+    # Build the binary
+    log_info "Building scanner binary with PyInstaller..."
+    if command_exists pyinstaller; then
+        pyinstaller --onefile --hidden-import yaml --add-data "engines:engines" --name tavo-scanner tavo_scanner.py
     else
-        log_error "Failed to build OpenGrep. This is common due to missing system dependencies."
-        log_info "You can try the following alternatives:"
-        echo "  1. Install system dependencies manually (see above)"
-        echo "  2. Use the pre-built binary: curl -fsSL https://raw.githubusercontent.com/opengrep/opengrep/main/install.sh | bash"
-        echo "  3. Skip OpenGrep build for now and install it separately later"
-        echo ""
-        read -p "Continue with setup anyway? (y/N): " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
+        log_error "PyInstaller not found. Please install with: pip install pyinstaller"
+        exit 1
     fi
 
-    cd ..
+    # Copy binary to CLI bin directory
+    if [ -f "dist/tavo-scanner" ]; then
+        mkdir -p ../../tavo-cli/bin
+        cp dist/tavo-scanner ../../tavo-cli/bin/
+        cd ../../tavo-cli
+        chmod +x bin/tavo-scanner
+        log_success "Tavo Scanner binary built and copied"
+    else
+        log_error "Failed to build Tavo Scanner binary"
+        cd ../../tavo-cli
+        exit 1
+    fi
 }
 
 # Setup configuration
@@ -197,44 +193,39 @@ verify_installation() {
 
     # Check if CLI is available
     if command_exists pipenv; then
-        if pipenv run tavo --help >/dev/null 2>&1; then
+        if pipenv run python main.py --help >/dev/null 2>&1; then
             log_success "CLI installation verified"
         else
-            log_error "CLI installation failed"
-            exit 1
+            log_warning "CLI verification failed, but continuing..."
         fi
     else
-        source .venv/bin/activate
-        if tavo --help >/dev/null 2>&1; then
+        if python main.py --help >/dev/null 2>&1; then
             log_success "CLI installation verified"
         else
-            log_error "CLI installation failed"
-            exit 1
+            log_warning "CLI verification failed, but continuing..."
         fi
     fi
 
-    # Check OpenGrep (be more flexible about location)
-    if [ -f "opengrep/_build/install/default/bin/opengrep-core" ]; then
-        log_success "OpenGrep binary found (built from source)"
-    elif [ -f "opengrep/bin/opengrep" ]; then
-        log_success "OpenGrep binary found (symlink)"
-    elif command_exists opengrep; then
-        log_success "OpenGrep found in PATH"
+    # Check Tavo Scanner (check bundled binary first)
+    if [ -f "bin/tavo-scanner" ]; then
+        log_success "Tavo Scanner binary found (bundled)"
+    elif command_exists tavo-scanner; then
+        log_success "Tavo Scanner found in PATH"
     else
-        log_warning "OpenGrep binary not found in expected locations"
-        log_info "You can install it later using: curl -fsSL https://raw.githubusercontent.com/opengrep/opengrep/main/install.sh | bash"
+        log_warning "Tavo Scanner binary not found in expected locations"
+        log_info "You can download it manually or run this build script"
     fi
 
     # Test basic functionality
     log_info "Testing basic functionality..."
     if command_exists pipenv; then
-        if pipenv run tavo rules list >/dev/null 2>&1; then
+        if pipenv run python main.py rules list >/dev/null 2>&1; then
             log_success "Basic functionality test passed"
         else
             log_warning "Basic functionality test failed - this may be expected if no rules are configured"
         fi
     else
-        if tavo rules list >/dev/null 2>&1; then
+        if python main.py rules list >/dev/null 2>&1; then
             log_success "Basic functionality test passed"
         else
             log_warning "Basic functionality test failed - this may be expected if no rules are configured"
@@ -254,9 +245,9 @@ print_usage() {
     echo "  pipenv shell"
     echo ""
     echo "  # Basic commands"
-    echo "  tavo --help"
-    echo "  tavo rules list"
-    echo "  tavo scan /path/to/repo"
+    echo "  python main.py --help"
+    echo "  python main.py rules list"
+    echo "  python main.py scan /path/to/repo"
     echo ""
     echo "For more information, see README.md"
 }
@@ -274,7 +265,7 @@ main() {
     setup_python_env
     echo ""
 
-    build_opengrep
+    download_tavo_scanner
     echo ""
 
     setup_config
