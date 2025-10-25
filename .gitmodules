@@ -1,3 +1,0 @@
-[submodule "opengrep"]
-	path = opengrep
-	url = https://github.com/opengrep/opengrep.git
