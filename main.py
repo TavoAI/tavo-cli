@@ -160,7 +160,30 @@ def cli():
 @click.option(
     "--api", is_flag=True, help="Use Tavo API for enhanced scanning and reporting."
 )
-def scan(repo_path, rules_dir, opa_policy, output, ai_batch, api):
+@click.option(
+    "--static-plugins",
+    help="Comma-separated list of static analysis plugin IDs to run.",
+)
+@click.option(
+    "--dynamic-plugins",
+    help="Comma-separated list of dynamic testing plugin IDs to run.",
+)
+@click.option(
+    "--plugin-config",
+    type=click.Path(exists=True),
+    help="Path to plugin configuration JSON file.",
+)
+def scan(
+    repo_path,
+    rules_dir,
+    opa_policy,
+    output,
+    ai_batch,
+    api,
+    static_plugins,
+    dynamic_plugins,
+    plugin_config,
+):
     """Run security scans on a repository."""
     repo_path = Path(repo_path)
 
@@ -183,13 +206,30 @@ def scan(repo_path, rules_dir, opa_policy, output, ai_batch, api):
 
     if api:
         # API-based scanning
-        return scan_with_api(repo_path, output)
+        return scan_with_api(
+            repo_path, output, static_plugins, dynamic_plugins, plugin_config
+        )
     else:
         # Local scanning with warnings
-        return scan_local(repo_path, rules_dir, opa_policy, output, ai_batch)
+        return scan_local(
+            repo_path,
+            rules_dir,
+            opa_policy,
+            output,
+            ai_batch,
+            static_plugins,
+            dynamic_plugins,
+            plugin_config,
+        )
 
 
-def scan_with_api(repo_path: Path, output: str) -> None:
+def scan_with_api(
+    repo_path: Path,
+    output: str,
+    static_plugins: Optional[str] = None,
+    dynamic_plugins: Optional[str] = None,
+    plugin_config: Optional[str] = None,
+) -> None:
     """Scan repository using Tavo API."""
     if not has_api_access():
         click.echo("❌ No authentication configured.", err=True)
@@ -214,7 +254,14 @@ def scan_with_api(repo_path: Path, output: str) -> None:
 
 
 def scan_local(
-    repo_path: Path, rules_dir: str, opa_policy: str, output: str, ai_batch: bool
+    repo_path: Path,
+    rules_dir: str,
+    opa_policy: str,
+    output: str,
+    ai_batch: bool,
+    static_plugins: Optional[str] = None,
+    dynamic_plugins: Optional[str] = None,
+    plugin_config: Optional[str] = None,
 ) -> None:
     """Run local scanning with Tavo Scanner."""
     rules_path = repo_path / rules_dir
@@ -248,6 +295,20 @@ def scan_local(
 
     # Use tavo-scanner with JSON format
     cmd = [scanner_cmd, "--format", "json", str(repo_path)]
+
+    # Add plugin options if specified
+    if static_plugins:
+        cmd.extend(["--static-plugins", static_plugins])
+    if dynamic_plugins:
+        cmd.extend(["--dynamic-plugins", dynamic_plugins])
+    if plugin_config:
+        cmd.extend(["--plugin-config", plugin_config])
+
+    # Add API key if available for plugin marketplace access
+    api_key = get_api_key()
+    if api_key:
+        cmd.extend(["--api-key", api_key])
+
     click.echo(f"Running: {' '.join(cmd)}")
 
     try:
@@ -265,7 +326,9 @@ def scan_local(
                 click.echo(f"Failed to parse JSON output: {result.stdout}")
                 findings = []
         else:
-            click.echo(f"Tavo Scanner error (exit code {result.returncode}): {result.stderr}")
+            click.echo(
+                f"Tavo Scanner error (exit code {result.returncode}): {result.stderr}"
+            )
             if result.stdout:
                 click.echo(f"Tavo Scanner stdout: {result.stdout}")
             findings = []
@@ -745,6 +808,200 @@ def clear_session_token():
         click.echo("✅ Session token cleared")
     else:
         click.echo("No session token configured")
+
+
+@cli.group()
+def registry():
+    """Manage plugins from the TavoAI marketplace."""
+    pass
+
+
+@registry.command("browse")
+@click.option(
+    "--plugin-type",
+    help="Filter by plugin type (static_analysis, dynamic_testing, proxy_filtering, log_analysis)",
+)
+@click.option("--category", help="Filter by category")
+@click.option("--pricing-tier", help="Filter by pricing tier (free, paid, enterprise)")
+@click.option("--search", help="Search plugins by name or description")
+@click.option("--page", default=1, type=int, help="Page number")
+@click.option("--per-page", default=20, type=int, help="Results per page")
+def browse_marketplace(plugin_type, category, pricing_tier, search, page, per_page):
+    """Browse available plugins in the marketplace."""
+    if not has_api_access():
+        click.echo("❌ Authentication required to browse marketplace", err=True)
+        click.echo("   Run 'tavo auth login' to authenticate")
+        return
+
+    try:
+        response = make_api_request(
+            "GET",
+            "/api/v1/plugins/marketplace",
+            params={
+                "plugin_type": plugin_type,
+                "category": category,
+                "pricing_tier": pricing_tier,
+                "search": search,
+                "page": page,
+                "per_page": per_page,
+            },
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        plugins = data.get("items", [])
+        total = data.get("total", 0)
+
+        if not plugins:
+            click.echo("No plugins found matching your criteria.")
+            return
+
+        click.echo(
+            f"\n🔌 Available Plugins (Page {page}, {len(plugins)} of {total} total)\n"
+        )
+
+        for plugin in plugins:
+            click.echo(f"  📦 {plugin['name']} (v{plugin['version']})")
+            click.echo(f"     ID: {plugin['id']}")
+            click.echo(f"     Type: {plugin['plugin_type']}")
+            click.echo(f"     Pricing: {plugin['pricing_tier']}")
+            if plugin.get("description"):
+                desc = (
+                    plugin["description"][:80] + "..."
+                    if len(plugin["description"]) > 80
+                    else plugin["description"]
+                )
+                click.echo(f"     {desc}")
+            click.echo(f"     Downloads: {plugin.get('download_count', 0)}")
+            click.echo()
+
+        if page * per_page < total:
+            click.echo(f"💡 Use --page {page + 1} to see more results")
+
+    except requests.exceptions.RequestException as e:
+        click.echo(f"❌ Failed to browse marketplace: {e}", err=True)
+
+
+@registry.command("install")
+@click.argument("plugin_id")
+def install_plugin(plugin_id):
+    """Install a plugin from the marketplace."""
+    if not has_api_access():
+        click.echo("❌ Authentication required to install plugins", err=True)
+        click.echo("   Run 'tavo auth login' to authenticate")
+        return
+
+    try:
+        click.echo(f"📥 Installing plugin {plugin_id}...")
+
+        # Call installation endpoint
+        response = make_api_request(
+            "POST",
+            f"/api/v1/plugins/{plugin_id}/install",
+        )
+        response.raise_for_status()
+
+        click.echo("✅ Plugin installed successfully")
+        click.echo(f"   Use it in scans with: --static-plugins {plugin_id}")
+        click.echo("   Or: --dynamic-plugins {plugin_id}")
+
+    except requests.exceptions.RequestException as e:
+        click.echo(f"❌ Failed to install plugin: {e}", err=True)
+
+
+@registry.command("list")
+def list_installed():
+    """List locally installed plugins."""
+    if not has_api_access():
+        click.echo("❌ Authentication required to list plugins", err=True)
+        click.echo("   Run 'tavo auth login' to authenticate")
+        return
+
+    try:
+        response = make_api_request("GET", "/api/v1/plugins/installed")
+        response.raise_for_status()
+        installations = response.json()
+
+        if not installations:
+            click.echo("No plugins installed.")
+            click.echo("Browse available plugins with: tavo registry browse")
+            return
+
+        click.echo(f"\n🔌 Installed Plugins ({len(installations)} total)\n")
+
+        for install in installations:
+            plugin = install.get("plugin", {})
+            click.echo(
+                f"  📦 {plugin.get('name', 'Unknown')} (v{plugin.get('version', '?')})"
+            )
+            click.echo(f"     ID: {install['plugin_id']}")
+            click.echo(f"     Type: {plugin.get('plugin_type', 'unknown')}")
+            click.echo(f"     Installed: {install['installed_at'][:10]}")
+            click.echo()
+
+    except requests.exceptions.RequestException as e:
+        click.echo(f"❌ Failed to list plugins: {e}", err=True)
+
+
+@registry.command("info")
+@click.argument("plugin_id")
+def plugin_info(plugin_id):
+    """Get detailed information about a plugin."""
+    if not has_api_access():
+        click.echo("❌ Authentication required", err=True)
+        click.echo("   Run 'tavo auth login' to authenticate")
+        return
+
+    try:
+        response = make_api_request("GET", f"/api/v1/plugins/{plugin_id}")
+        response.raise_for_status()
+        plugin = response.json()
+
+        click.echo(f"\n📦 {plugin['name']}")
+        click.echo(f"{'=' * (len(plugin['name']) + 3)}")
+        click.echo(f"ID: {plugin['id']}")
+        click.echo(f"Version: {plugin['version']}")
+        click.echo(f"Type: {plugin['plugin_type']}")
+        click.echo(f"Author: {plugin.get('author', 'Unknown')}")
+        click.echo(f"License: {plugin.get('license', 'Unknown')}")
+        click.echo(f"Pricing: {plugin['pricing_tier']}")
+        click.echo(f"Downloads: {plugin.get('download_count', 0)}")
+        click.echo(f"Official: {'Yes' if plugin.get('is_official') else 'No'}")
+        click.echo(f"Approved: {'Yes' if plugin.get('is_approved') else 'No'}")
+
+        if plugin.get("description"):
+            click.echo(f"\nDescription:\n{plugin['description']}")
+
+        if plugin.get("compatible_scanner_version"):
+            click.echo(
+                f"\nCompatible Scanner Version: {plugin['compatible_scanner_version']}"
+            )
+
+        if plugin.get("dependencies"):
+            click.echo(f"\nDependencies:")
+            deps = plugin["dependencies"]
+            if deps.get("python"):
+                click.echo(f"  Python: {deps['python']}")
+            if deps.get("packages"):
+                click.echo(f"  Packages:")
+                for pkg in deps["packages"]:
+                    click.echo(f"    - {pkg}")
+
+        click.echo(f"\nInstall with: tavo registry install {plugin_id}")
+
+    except requests.exceptions.RequestException as e:
+        click.echo(f"❌ Failed to get plugin info: {e}", err=True)
+
+
+@registry.command("uninstall")
+@click.argument("plugin_id")
+@click.confirmation_option(prompt="Are you sure you want to uninstall this plugin?")
+def uninstall_plugin(plugin_id):
+    """Uninstall a plugin."""
+    # For now, this just removes the installation record
+    # The actual plugin files would need to be removed from the local cache
+    click.echo("⚠️  Plugin uninstallation not yet implemented")
+    click.echo("   This feature will be available in a future release")
 
 
 if __name__ == "__main__":
